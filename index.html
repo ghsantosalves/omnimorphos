@@ -203,6 +203,7 @@ button{font:inherit}
    ===================================================================== */
 const RULES={
   startHP:20,
+  maxProt:8,           // limite de Proteção acumulada
   openingHand:6,          // compra inicial
   extraAfterMulligan:1,   // carta extra depois de aceitar a mão
   // faixas de nível: [XP mínimo, nível]
@@ -242,20 +243,20 @@ const knowledge=(extra={})=>extra;
 O('vorath','Vorath, o Conquistador Kaldraniano','Atharvash','Humano Guerreiro',3,3,3,4,'Recebe +1/+1 para cada omnita Kaldraniano no seu cemitério.',{flavor:'O que importa é a vitória... e ninguém irá me impedir.',stat:(c,p)=>{const n=p.grave.filter(x=>x.d.type==='omnita'&&/Kaldran/.test(x.d.name)).length;return[n,n]}});
 O('golem','Golem de Pedra','Atharvash','Golem',4,4,4,4,'Quando esta carta for para o cemitério, gere duas fichas 2/2 de Golem Inferior.',{flavor:'Um golem que habita as montanhas de Atharvash.',death:async(c,p)=>{summonToken(p,'tGolem');summonToken(p,'tGolem')}});
 O('behemoth','Behemoth','Atharvash','Monstro Gigante',8,6,5,6,'',{flavor:'Um monstro de origem natural que habita as cordilheiras de Atharvash.'});
-O('mestreChamas','Mestre Kaldraniano das Chamas','Atharvash','Humano Feiticeiro',3,3,3,2,'Toda vez que uma Execução Instantânea com efeito queimar é ativada, esta carta ganha +1/+0 até o fim do turno.');
+O('mestreChamas','Mestre Kaldraniano das Chamas','Atharvash','Humano Feiticeiro',3,3,3,3,'Toda vez que uma Execução Instantânea com efeito queimar é ativada, esta carta ganha +1/+0 até o fim do turno.');
 O('dragaoPedra','Dragão de Pedra','Atharvash','Dragão',6,5,6,5,'Tremor: quando esta carta entra, o oponente descarta 2 cartas.',{flavor:'Um dragão que habita as montanhas de Atharvash.',enter:async(c,p)=>{await discardChoose(opp(p),2,'Tremor! Descarte 2 cartas')}});
-O('espiritoFogo','Espírito Elemental de Fogo','Atharvash','Espírito Elemental',6,6,1,1,'Se esta carta atacar o oponente diretamente, jogue um d6: este é o número de ataques que ele recebe.');
-O('arqueiroK','Arqueiro Kaldraniano','Atharvash','Humano Arqueiro',1,1,1,1,'',{flavor:'Os jovens Kaldranianos podem surpreender com os equipamentos corretos.'});
+O('espiritoFogo','Espírito Elemental de Fogo','Atharvash','Espírito Elemental',6,6,2,2,'Se esta carta atacar o oponente diretamente, jogue um d6: este é o número de ataques que ele recebe.');
+O('arqueiroK','Arqueiro Kaldraniano','Atharvash','Humano Arqueiro',1,1,2,1,'',{flavor:'Os jovens Kaldranianos podem surpreender com os equipamentos corretos.'});
 O('aranthor','Lorde Aranthor, o Exilado','Atharvash','Humano Lorde Guerreiro',9,7,6,7,'Ao baixar, fica suspenso por 3 turnos; ao fim do 3º turno entra em jogo com +2/+3. Cada omnita destruído por Aranthor vira uma ficha Zumbi 1/1 sua.',{suspendOnPlay:3});
 O('urso','Urso Marrom Gigante','Atharvash','Mamífero Gigante',8,5,5,5,'',{flavor:'Este urso imponente percorre as cordilheiras de Atharvash.'});
 O('iniciado','Iniciado Kaldraniano','Atharvash','Humano Mago',3,2,1,1,'Uma vez por turno: escolha um alvo para receber 2 de dano.',{act:{label:'Causar 2 de dano',run:async(c,p)=>{const t=await pickTarget(p,{title:'Iniciado Kaldraniano: 2 de dano',dmg:2});if(t)await hit(t,2,'Iniciado')},ai:p=>bestTargetScore(p,{dmg:2})}});
 O('drakara','Cavaleira Drakara','Atharvash','Humano Cavaleiro Réptil',5,3,3,4,'Quando Drakara entrar, procure no baralho outro omnita Réptil e adicione à mão. Embaralhe.',{enter:async(c,p)=>{await search(p,x=>x.d.type==='omnita'&&x.d.cat.includes('Réptil'),'Drakara: escolha um omnita Réptil')}});
 O('bruxaPurpura','Bruxa Púrpura','Atharvash','Humano Bruxo',3,1,2,1,'Ao entrar, jogue uma moeda: se ganhar, o oponente queima 2 por 3 turnos. Se perder, você queima 2 por 3 turnos.',{enter:async(c,p)=>{const w=coin();const t=w?opp(p):p;log(`Moeda: ${w?'ganhou':'perdeu'}! ${t.name} queimará 2 por 3 turnos.`,'dmg');t.dots.push({n:2,t:3,src:'Bruxa Púrpura'})}});
-O('combatente','Combatente Kaldraniano','Atharvash','Humano Guerreiro',2,1,2,1,'Treinamento: suspenda esta carta por 2 turnos e receba 2 de experiência adicional.',{kw:['treinamento']});
-O('salamandra','Salamandra Vulcânica Filhote','Atharvash','Réptil',2,2,1,2,'Montaria: equipe a um omnita humanoide/humano para adicionar seu ataque e defesa.',{kw:['montaria'],flavor:'Uma pequena salamandra comum das regiões vulcânicas.'});
-O('slime','Slime Explosivo','Atharvash','Slime',1,1,0,1,'Quando esta carta é derrotada em combate, o oponente recebe 1 de dano.',{death:async(c,p,info)=>{if(info.combat)damagePlayer(opp(p),1,null,'Slime Explosivo')}});
-O('espadachim','Espadachim Kaldraniano','Atharvash','Humano Guerreiro',2,2,1,1,'Golpe Duplo: pode atacar duas vezes por turno.',{kw:['golpe']});
-O('falcao','Falcão Kaldraniano de Fogo','Atharvash','Ave Fera Alada',2,2,1,1,'Voar: só pode ser bloqueado por omnitas com Voar ou Alcance.',{kw:['voar'],flavor:'Símbolo da nobreza do império Kaldraniano.'});
+O('combatente','Combatente Kaldraniano','Atharvash','Humano Guerreiro',2,1,2,2,'Sem Latência. Treinamento: suspenda esta carta por 2 turnos e receba 2 de experiência adicional.',{kw:['treinamento','agil']});
+O('salamandra','Salamandra Vulcânica Filhote','Atharvash','Réptil',2,2,2,2,'Montaria: equipe a um omnita humanoide/humano para adicionar seu ataque e defesa.',{kw:['montaria'],flavor:'Uma pequena salamandra comum das regiões vulcânicas.'});
+O('slime','Slime Explosivo','Atharvash','Slime',1,1,1,1,'Quando esta carta é derrotada em combate, o oponente recebe 1 de dano.',{death:async(c,p,info)=>{if(info.combat)damagePlayer(opp(p),1,null,'Slime Explosivo')}});
+O('espadachim','Espadachim Kaldraniano','Atharvash','Humano Guerreiro',2,2,2,1,'Sem Latência. Golpe Duplo: pode atacar duas vezes por turno.',{kw:['golpe','agil']});
+O('falcao','Falcão Kaldraniano de Fogo','Atharvash','Ave Fera Alada',2,2,2,1,'Voar: só pode ser bloqueado por omnitas com Voar ou Alcance.',{kw:['voar'],flavor:'Símbolo da nobreza do império Kaldraniano.'});
 O('fada','Fada Mariposa Ardente','Atharvash','Fada Inseto',2,2,1,1,'Voar. Quando esta carta é baixada, o oponente é impedido de baixar omnitas no próximo turno.',{kw:['voar'],enter:async(c,p)=>{opp(p).noSummon=1;log(`${opp(p).name} não poderá baixar omnitas no próximo turno.`)}});
 O('fenix','Fênix de Atharvash','Atharvash','Fera Mística Superior',10,8,'?','?','Voar. Sempre que for enviada do campo ao cemitério, retorna ao campo no início do seu próximo turno. Ataque e defesa = número de Execuções Instantâneas no seu cemitério.',{kw:['voar']});
 S('flechas','Flechas Flamejantes','Atharvash','equip',1,1,'Equipe em um omnita Arqueiro: ele pode atacar direto os pontos de vida do oponente (não pode ser bloqueado) e ganha Alcance.',{eqFilter:c=>c.d.cat.includes('Arqueiro'),eqKw:['alcance','imbloqueavel']});
@@ -271,14 +272,14 @@ S('cacada','Caçada','Atharvash','regular',1,2,'Se seu oponente possui apenas 1 
 S('quebrandoGelo','Quebrando o Gelo','Atharvash','regular',2,1,'Se o oponente tiver uma carta de Kurai ativa no jogo, ele envia as duas primeiras cartas do baralho para o cemitério.',{play:async p=>{const o=opp(p);if(![...o.field,...o.totems].some(c=>c.d.cont==='Kurai')){log('Nenhuma carta de Kurai ativa: sem efeito.');return}for(let i=0;i<2&&o.deck.length;i++)toGrave(o.deck.pop());log(`${o.name} envia 2 cartas do baralho ao cemitério.`)},ai:p=>[...opp(p).field,...opp(p).totems].some(c=>c.d.cont==='Kurai')?8:0});
 S('desintegrar','Desintegrar','Atharvash','instant',2,3,'Anule uma carta não omnita. Caso a execução desta carta seja bem-sucedida, seu oponente compra uma carta.',{counter:'nonOmnita'});
 S('incinerar','Incinerar','Atharvash','instant',2,3,'Descarte uma quantidade N de cartas e cause a mesma quantidade de dano direto ao oponente.',{burn:true,can:p=>p.hand.length>=2,play:async p=>{const cards=await chooseMulti(p,'Incinerar: escolha as cartas a descartar',p.hand,1,p.hand.length,{ai:()=>p.hand.filter(x=>x.d.type==='knowledge'&&p.knowUsed||x.d.lvl>level(p)+1).slice(0,Math.max(1,opp(p).hp<=p.hand.length?opp(p).hp:2))});cards.forEach(c=>{removeFrom(p.hand,c);toGrave(c)});damagePlayer(opp(p),cards.length,null,'Incinerar')},ai:p=>opp(p).hp<=p.hand.length-1?90:0});
-S('raio','Raio Vermelho','Atharvash','instant',1,1,'Cause 1 de dano a qualquer alvo.',{burn:true,...dmgSpell(1)});
-S('chama','Chama Explosiva','Atharvash','instant',1,1,'Escolha até dois omnitas e cause 1 de dano a cada um.',{burn:true,can:()=>allField().length>0,play:async p=>{for(let i=0;i<2;i++){const t=await pickTarget(p,{title:`Chama Explosiva: alvo ${i+1} de 2`,kind:'omnita',dmg:1,instant:true,optional:true});if(!t)break;await hit(t,1,'Chama Explosiva')}},ai:p=>bestTargetScore(p,{dmg:1,kind:'omnita',instant:true})});
+S('raio','Raio Vermelho','Atharvash','instant',1,1,'Cause 1 de dano a qualquer alvo. Fogo: ignora Proteção; voadores recebem +1, omnitas de Kurai recebem 1 a menos.',{burn:true,...dmgSpell(1)});
+S('chama','Chama Explosiva','Atharvash','instant',1,1,'Escolha até dois omnitas e cause 2 de dano a cada um.',{burn:true,can:()=>allField().length>0,play:async p=>{for(let i=0;i<2;i++){const t=await pickTarget(p,{title:`Chama Explosiva: alvo ${i+1} de 2`,kind:'omnita',dmg:2,instant:true,optional:true});if(!t)break;await hit(t,2,'Chama Explosiva')}},ai:p=>bestTargetScore(p,{dmg:1,kind:'omnita',instant:true})});
 S('erupcao','Erupção Vulcânica','Atharvash','instant',2,4,'Todos os omnitas em campo são destruídos.',{flavor:'A lava consome tudo.',burn:true,play:async p=>{for(const c of allField())if(!hasKw(c,'runica'))await destroy(c,{})},ai:p=>{const e=sumVal(opp(p).field),m=sumVal(p.field);return e-m>7?25:0}});
-S('grandeRaio','Grande Raio Vermelho','Atharvash','instant',1,1,'Cause 2 de dano a qualquer alvo.',{burn:true,...dmgSpell(2)});
-S('explosaoArdente','Explosão Ardente','Atharvash','instant',2,3,'Cause 2 de dano a todos os omnitas do oponente.',{burn:true,play:async p=>{for(const c of [...opp(p).field])if(!hasKw(c,'runica')){c.dmg+=2}log('2 de dano em todos os omnitas do oponente.','dmg');await sba()},ai:p=>{const k=opp(p).field.filter(c=>def(c)-c.dmg<=2).length;return k>=2?24:k===1?9:0}});
+S('grandeRaio','Grande Raio Vermelho','Atharvash','instant',1,1,'Cause 2 de dano a qualquer alvo. Fogo: ignora Proteção; voadores recebem +1, omnitas de Kurai recebem 1 a menos.',{burn:true,...dmgSpell(2)});
+S('explosaoArdente','Explosão Ardente','Atharvash','instant',2,3,'Cause 2 de dano a todos os omnitas do oponente.',{burn:true,play:async p=>{for(const c of [...opp(p).field])if(!hasKw(c,'runica')){c.dmg+=c.d.cont==='Kurai'?1:hasKw(c,'voar')?3:2}log('2 de dano em todos os omnitas do oponente.','dmg');await sba()},ai:p=>{const k=opp(p).field.filter(c=>def(c)-c.dmg<=2).length;return k>=2?24:k===1?9:0}});
 S('curiosidade','Curiosidade','Atharvash','instant',1,1,'Olhe as duas primeiras cartas do seu baralho e organize em qualquer ordem.',{play:async p=>{const top=p.deck.slice(-2).reverse();if(top.length<2)return;const first=await chooseCard(p,'Curiosidade: qual carta fica no topo?',top,{ai:x=>x.d.type==='knowledge'?10:x.d.lvl<=level(p)?5:0});if(first===top[1]){const n=p.deck.length;[p.deck[n-1],p.deck[n-2]]=[p.deck[n-2],p.deck[n-1]]}log(`${p.name} reorganiza o topo do baralho.`)},ai:()=>3});
-S('raioAterr','Raio Aterrorizador Vermelho','Atharvash','instant',2,2,'Cause 3 de dano a qualquer alvo.',{burn:true,...dmgSpell(3)});
-S('explosaoFinal','Explosão Final','Atharvash','instant',3,2,'Cause 2 de dano a todos os omnitas oponentes. A cada omnita eliminado neste turno, receba 2 de experiência.',{burn:true,play:async p=>{const o=opp(p);const before=o.field.length;for(const c of [...o.field])if(!hasKw(c,'runica'))c.dmg+=2;log('2 de dano em todos os omnitas do oponente.','dmg');await sba();const k=Math.max(0,before-o.field.length);if(k)gainXP(p,2*k,'Explosão Final')},ai:p=>{const k=opp(p).field.filter(c=>def(c)-c.dmg<=2).length;return k>=1?14+k*8:0}});
+S('raioAterr','Raio Aterrorizador Vermelho','Atharvash','instant',2,2,'Cause 3 de dano a qualquer alvo. Fogo: ignora Proteção; voadores recebem +1, omnitas de Kurai recebem 1 a menos.',{burn:true,...dmgSpell(3)});
+S('explosaoFinal','Explosão Final','Atharvash','instant',3,2,'Cause 2 de dano a todos os omnitas oponentes. A cada omnita eliminado neste turno, receba 2 de experiência.',{burn:true,play:async p=>{const o=opp(p);const before=o.field.length;for(const c of [...o.field])if(!hasKw(c,'runica'))c.dmg+=c.d.cont==='Kurai'?1:hasKw(c,'voar')?3:2;log('2 de dano em todos os omnitas do oponente.','dmg');await sba();const k=Math.max(0,before-o.field.length);if(k)gainXP(p,2*k,'Explosão Final')},ai:p=>{const k=opp(p).field.filter(c=>def(c)-c.dmg<=2).length;return k>=1?14+k*8:0}});
 S('furia','Fúria Atharvashiana','Atharvash','instant',1,1,'Todos os seus omnitas ganham +0/+2 até o fim do turno.',{play:async p=>{p.field.forEach(c=>c.mods.push({a:0,d:2,eot:true}))},ai:()=>0});
 S('botanica','Botânica Perigosa','Atharvash','knowledge',5,1,'Receba 5 de experiência. Esta carta não pode ser anulada. Jogue uma moeda: se ganhar, cause 2 de dano a qualquer alvo.',{play:async p=>{if(coin()){log('Moeda: ganhou!');const t=await pickTarget(p,{title:'Botânica Perigosa: 2 de dano',dmg:2});if(t)await hit(t,2,'Botânica Perigosa')}else log('Moeda: perdeu.')}});
 S('sabedoria','Sabedoria Ancestral','Atharvash','knowledge',3,1,'Receba 3 de experiência. Esta carta não pode ser anulada.');
@@ -289,7 +290,7 @@ S('engenheiro','Engenheiro Confuso','Atharvash','knowledge','?',2,'Jogue um d6: 
 
 /* ------------------------------- GAIA ------------------------------ */
 O('gaia','Deusa Gaia','Gaia','Deusa Superior',8,8,5,5,'Esta carta recebe +1/+1 para cada omnita de tipo animal que você controla em jogo.',{stat:(c,p)=>{const n=p.field.filter(x=>x!==c&&isAnimal(x.d)).length;return[n,n]}});
-O('cavaleiroElefante','Cavaleiro Elefante','Gaia','Cavaleiro Elefante',2,4,4,5,'Quando esta carta entrar em jogo, procure em seu baralho outro omnita Elefante e adicione à mão. Embaralhe.',{enter:async(c,p)=>{await search(p,x=>x.d.type==='omnita'&&/Elefante/.test(x.d.name+x.d.cat),'Cavaleiro Elefante: escolha um Elefante')}});
+O('cavaleiroElefante','Cavaleiro Elefante','Gaia','Cavaleiro Elefante',2,4,4,5,'Atropelar. Quando esta carta entrar em jogo, procure em seu baralho outro omnita Elefante e adicione à mão. Embaralhe.',{kw:['atropelar'],enter:async(c,p)=>{await search(p,x=>x.d.type==='omnita'&&/Elefante/.test(x.d.name+x.d.cat),'Cavaleiro Elefante: escolha um Elefante')}});
 O('harpiaGuerreira','Harpia Guerreira','Gaia','Humano Ave',4,2,2,2,'Voar. Treinamento.',{kw:['voar','treinamento']});
 O('cobra','Cobra Coral','Gaia','Réptil Cobra',4,2,2,2,'Veneno: se o ataque for direto ao oponente, ele perde 2 pontos de vida por 3 turnos.');
 O('harpiaArqueira','Harpia Arqueira','Gaia','Humano Ave Arqueiro',3,2,2,2,'Voar. Golpe Duplo.',{kw:['voar','golpe']});
@@ -299,19 +300,19 @@ O('xama','Xamã','Gaia','Humano Nativo',4,2,2,2,'Voar. Uma vez por turno, no seu
 O('harpia','Harpia','Gaia','Ave',2,1,2,2,'Voar.',{kw:['voar']});
 O('sereia','Sereia','Gaia','Humano Peixe',4,2,2,2,'Encantar: se esta carta for alvo de um ataque, role um d6. Se o resultado for 3 ou menos, ela não recebe dano desse ataque.');
 O('nativoGuerreiro','Nativo Guerreiro','Gaia','Humano Nativo',2,1,2,2,'',{flavor:'Um tribal comum nas regiões de Gaia do Sul.'});
-O('elefanteLanceiro','Elefante Lanceiro','Gaia','Mamífero Elefante',4,4,3,5,'Alcance.',{kw:['alcance']});
-O('onca','Onça','Gaia','Felino',3,2,3,2,'',{flavor:'Um animal de grande porte e alta velocidade encontrado em Gaia.'});
+O('elefanteLanceiro','Elefante Lanceiro','Gaia','Mamífero Elefante',4,4,3,5,'Alcance. Atropelar.',{kw:['alcance','atropelar']});
+O('onca','Onça','Gaia','Felino',3,2,3,2,'Atropelar.',{kw:['atropelar'],flavor:'Um animal de grande porte e alta velocidade encontrado em Gaia.'});
 O('bruxaVideira','Bruxa da Videira','Gaia','Humano Bruxo',2,2,2,2,'Quando esta carta entra, prenda um omnita oponente: enquanto ela estiver em jogo, ele não poderá participar de combates nem usar habilidades.',{enter:async(c,p)=>{const t=await pickTarget(p,{title:'Bruxa da Videira: prenda um omnita',kind:'oppOmnita',destroy:true});if(t){t.prison=c.uid;log(`${t.d.name} está preso pelas videiras.`)}}});
 O('nativoArqueiro','Nativo Arqueiro','Gaia','Humano Nativo Arqueiro',2,1,1,1,'Alcance.',{kw:['alcance']});
-O('gorilla','Gorila','Gaia','Mamífero',4,4,3,5,'',{flavor:'Um animal de grande porte e grande força encontrado em Gaia.'});
+O('gorilla','Gorila','Gaia','Mamífero',4,4,3,5,'Atropelar: o dano que sobrar do combate vai para o oponente.',{kw:['atropelar'],flavor:'Um animal de grande porte e grande força encontrado em Gaia.'});
 O('aracne','Aracne','Gaia','Humanoide Aranha',2,2,1,1,'Esta carta recebe +1/+1 para cada carta que destruir em combate.');
 O('nativoLutador','Nativo Lutador','Gaia','Humano Nativo',3,2,2,2,'Golpe Duplo.',{kw:['golpe']});
 O('sapoIlusionista','Sapo Ilusionista','Gaia','Anfíbio Sapo Mago',2,2,2,2,'Quando esta carta entra em jogo, crie duas cópias fichas 1/1 que permanecem em jogo até o final do turno.',{enter:async(c,p)=>{summonToken(p,'tSapo',{temp:true});summonToken(p,'tSapo',{temp:true})}});
 O('sapoLadino','Sapo Ladino','Gaia','Anfíbio Sapo',2,1,1,1,'Quando esta carta entrar, pegue uma carta aleatória da mão do oponente.',{enter:async(c,p)=>{const o=opp(p);if(!o.hand.length)return;const x=o.hand[rnd(o.hand.length)];removeFrom(o.hand,x);p.hand.push(x);log(`${p.name} rouba uma carta da mão de ${o.name}${p.isAI||HOT()?'':' ('+x.d.name+')'}.`)}});
 O('sapoNinja','Sapo Ninja','Gaia','Anfíbio Sapo',1,2,1,1,'Golpe Duplo.',{kw:['golpe']});
 O('arraia','Arraia Mística','Gaia','Peixe Místico',5,6,4,4,'Uma vez por turno, você pode olhar a carta do topo do seu baralho. Se for uma carta omnita, ganhe 2 de experiência.',{act:{label:'Olhar o topo do baralho',run:async(c,p)=>{const t=p.deck[p.deck.length-1];if(!t)return;log(`${p.name} olha o topo${p.isAI||HOT()?'':': '+t.d.name}.`);if(t.d.type==='omnita')gainXP(p,2,'Arraia Mística')},ai:()=>6}});
-O('sapoLutador','Sapo Lutador','Gaia','Anfíbio Sapo',3,2,2,3,'',{flavor:'Um sapo da tribo dos sapos de Gaia.'});
-O('kraken','Kraken Ganancioso','Gaia','Molusco Místico',6,6,6,8,'Como custo adicional para jogar esta carta, ofereça um omnita ativo: envie o omnita escolhido para o cemitério.',{can:p=>p.field.length>0,cost:async p=>{const c=await chooseCard(p,'Kraken: escolha um omnita para oferecer',p.field,{ai:x=>-val(x),optional:!p.isAI});if(!c)return false;await destroy(c,{force:true});return true}});
+O('sapoLutador','Sapo Lutador','Gaia','Anfíbio Sapo',3,2,2,3,'Atropelar.',{kw:['atropelar'],flavor:'Um sapo da tribo dos sapos de Gaia.'});
+O('kraken','Kraken Ganancioso','Gaia','Molusco Místico',6,6,6,8,'Atropelar. Como custo adicional para jogar esta carta, ofereça um omnita ativo: envie o omnita escolhido para o cemitério.',{kw:['atropelar'],can:p=>p.field.length>0,cost:async p=>{const c=await chooseCard(p,'Kraken: escolha um omnita para oferecer',p.field,{ai:x=>-val(x),optional:!p.isAI});if(!c)return false;await destroy(c,{force:true});return true}});
 S('papagaio','Papagaio Correio','Gaia','instant',2,2,'Compre 1 carta.',{play:async p=>draw(p,1),ai:()=>10});
 S('defesaAerea','Defesa Aérea','Gaia','instant',2,1,'Quando o oponente declarar um ataque, escolha uma Harpia sua: ela bloqueia esse ataque, ignorando qualquer restrição de bloqueio.',{responseOnly:true,atkWin:true,can:p=>p.field.some(c=>isHarpia(c)&&onField(c)),play:async p=>{const t=await chooseCard(p,'Defesa Aérea: qual Harpia bloqueia?',p.field.filter(isHarpia),{ai:x=>def(x)-x.dmg});if(t){G.forcedBlock=t;log(`${t.d.name} intercepta o ataque!`)}}});
 S('primeirosSocorros','Primeiros Socorros','Gaia','instant',2,2,'Use esta carta em resposta à ativação de uma Execução Instantânea: recupere 2 pontos de vida.',{responseOnly:true,play:async p=>heal(p,2,'Primeiros Socorros')});
@@ -444,15 +445,15 @@ const DECKS={
   Atharvash:{desc:'Agressividade, rapidez e dano. Reino de Kaldran, entre montanhas vulcânicas.',list:[
     ['arqueiroK',2],['combatente',2],['bruxaPurpura',1],['slime',2],['espadachim',2],['falcao',2],['fada',1],['salamandra',1],['iniciado',2],['vorath',1],['mestreChamas',1],['drakara',1],['golem',1],['dragaoPedra',1],['urso',1],['espiritoFogo',1],['behemoth',1],['aranthor',1],['fenix',1],
     ['flechas',1],['protRunica',1],['espadaNegra',1],['asas',1],['coracaoAth',1],
-    ['chamarTropas',1],['colheita',1],['horaColheita',1],['malNecessario',1],['cacada',1],['quebrandoGelo',1],
-    ['desintegrar',1],['incinerar',1],['raio',2],['chama',1],['erupcao',1],['grandeRaio',1],['explosaoArdente',1],['curiosidade',1],['raioAterr',1],['explosaoFinal',1],['furia',1],
-    ['botanica',3],['sabedoria',3],['pergaminhos',3],['livroA',2],['livroB',2],['engenheiro',2]]},
+    ['chamarTropas',1],['colheita',1],['horaColheita',1],
+    ['desintegrar',1],['incinerar',1],['raio',2],['chama',1],['erupcao',1],['grandeRaio',2],['explosaoArdente',2],['raioAterr',2],['explosaoFinal',1],
+    ['botanica',3],['sabedoria',4],['pergaminhos',4],['livroA',2],['livroB',2],['engenheiro',2]]},
   Gaia:{desc:'Natureza, harmonia e crescimento. Harpias, nativos, sapos e feras de Gaia do Sul.',list:[
     ['harpia',2],['nativoGuerreiro',2],['nativoArqueiro',2],['sapoLadino',1],['harpiaGuerreira',1],['cobra',1],['harpiaArqueira',1],['feiticeiraHarpia',1],['xama',1],['sereia',1],['onca',1],['bruxaVideira',1],['aracne',1],['nativoLutador',1],['sapoIlusionista',1],['sapoNinja',1],['sapoLutador',1],['harpiaGuerreiro',1],['elefanteLanceiro',1],['gorilla',1],['cavaleiroElefante',1],['arraia',1],['kraken',1],['gaia',1],
     ['papagaio',1],['defesaAerea',1],['primeirosSocorros',1],['cantoGuerra',1],['mina',1],['camuflagem',1],['planta',1],
     ['magifruto',1],['construindo',1],['paleo',1],['driade',1],['perdido',1],['aguas',1],['catalogo',1],
     ['estatua',1],['crescimento',1],
-    ['floresta',4],['herbalista',4],['cacador',3],['mercador',4],['arqueologica',4]]},
+    ['floresta',4],['herbalista',4],['cacador',4],['mercador',3],['arqueologica',4]]},
   Kurai:{desc:'Controle, frio e resiliência. Monges de Asura e criaturas do Vazio.',list:[
     ['monge',2],['iceGolem',2],['morcego',2],['lutadorAsuriano',2],['baiacu',1],['mongeAdepto',2],['tigre',1],['pangolim',1],['mongeMestre',1],['bruxaGelida',1],['demonio',1],['trollin',1],['panda',1],['cavaloVazio',1],['pescador',1],['espiritoGelo',1],['asura',1],['yeti',1],['dragaoGelo',1],['lordeVazio',1],
     ['criacaoVazia',1],['nevasca',1],['espolio',1],['sisifo',1],['acordo',1],['placa',1],['puxar',1],['manequim',1],['idolos',1],['chaveConh',1],
@@ -500,8 +501,8 @@ function floatTxt(target,txt,cls=''){let el=null;if(target&&target.isPlayer)el=$
 
 /* ============================ AÇÕES BÁSICAS ========================= */
 function gainXP(p,n,src){if(!n)return;const L0=baseLevel(p.xp);p.xp+=n;log(`${p.name} recebe ${n} XP${src?' ('+src+')':''}.`,'xp');floatTxt(p,`+${n} XP`,'xp');const L1=baseLevel(p.xp);if(L1>L0)log(`★ ${p.name} sobe para o nível ${L1}!`,'xp')}
-function heal(p,n,src){p.hp+=n;log(`${p.name} recupera ${n} de vida${src?' ('+src+')':''}.`,'heal');floatTxt(p,`+${n}`,'heal')}
-function damagePlayer(p,n,srcCard,label,ignoreProt){if(n<=0||G.over)return;if(p.prot&&!ignoreProt){const a=Math.min(p.prot,n);p.prot-=a;n-=a;log(`🛡 A Proteção de ${p.name} absorve ${a}.`);if(!n){if(srcCard)atharvashHeart(srcCard);return}}p.hp-=n;log(`${p.name} recebe ${n} de dano${label?' ('+label+')':srcCard?' ('+srcCard.d.name+')':''}.`,'dmg');floatTxt(p,`-${n}`);if(srcCard)atharvashHeart(srcCard);checkOver()}
+function heal(p,n,src){if(p.scorch&&G.turnNo<=p.scorch){log(`🔥 ${p.name} está queimado e não recupera vida${src?' ('+src+')':''}.`);return}p.hp+=n;log(`${p.name} recupera ${n} de vida${src?' ('+src+')':''}.`,'heal');floatTxt(p,`+${n}`,'heal')}
+function damagePlayer(p,n,srcCard,label,ignoreProt){if(n<=0||G.over)return;if(p.prot&&!ignoreProt&&G.fire){log('🔥 O fogo atravessa a Proteção.')}if(p.prot&&!ignoreProt&&!G.fire){const a=Math.min(p.prot,n);p.prot-=a;n-=a;log(`🛡 A Proteção de ${p.name} absorve ${a}.`);if(!n){if(srcCard)atharvashHeart(srcCard);return}}p.hp-=n;if(G.fire||(srcCard&&srcCard.d.cont==='Atharvash')){p.scorch=G.turnNo+(G.active===p.id?2:1)}log(`${p.name} recebe ${n} de dano${label?' ('+label+')':srcCard?' ('+srcCard.d.name+')':''}.`,'dmg');floatTxt(p,`-${n}`);if(srcCard)atharvashHeart(srcCard);checkOver()}
 function atharvashHeart(c){if(c.d.cont!=='Atharvash'||!(c.d.type==='omnita'||c.d.type==='token'))return;const p=P[c.ctrl];const n=p.totems.filter(t=>t.id==='coracaoAth').length;if(n)gainXP(p,n,'Coração Atharvashiano')}
 function draw(p,n){for(let i=0;i<n;i++){if(!p.deck.length){p.decked=true;log(`${p.name} não tem mais cartas no baralho!`,'dmg');checkOver();return}p.hand.push(p.deck.pop());const h=p.totems.filter(t=>t.id==='crescimento').length;if(h)heal(p,h,'Crescimento Excessivo')}}
 function toGrave(c){if(c.d.type==='token'){INST.delete(c.uid);return}const o=P[c.owner];if(o.totems.some(t=>t.id==='desvio')&&c.id!=='desvio'){toVoid(c);return}resetCard(c);o.grave.push(c)}
@@ -526,14 +527,15 @@ async function destroy(c,info={}){
   if(!c.noAbil&&c.d.death)await c.d.death(c,p,info);
   if(info.toVoid)toVoid(c);else{toGrave(c);if(c.id==='fenix'&&P[c.owner].grave.includes(c))P[c.owner].fenix.push(c)}
   const killer=info.killer||(!info.combat&&!info.force?G.effSrc:null);
-  if(k.has('consumir')&&killer&&killer!==c){
+  if(k.has('consumir')&&killer&&killer!==c&&killer.d&&killer.d.cont==='Apólia'){log(`☀ A luz de ${killer.d.name} repele o Consumir do Vazio.`)}
+  else if(k.has('consumir')&&killer&&killer!==c){
     if(onField(killer)){log(`Consumir: ${c.d.name} leva ${killer.d.name} junto!`,'atk');await destroy(killer,{})}
     else{const tp=P.find(q=>q.totems.includes(killer));if(tp){removeFrom(tp.totems,killer);toGrave(killer);log(`Consumir: ${c.d.name} leva ${killer.d.name} junto!`,'atk')}}
   }
 }
 async function banish(c){if(!onField(c))return;await leaveField(c);log(`${c.d.name} é enviado ao vazio.`);toVoid(c)}
 async function sba(){let again=true,guard=0;while(again&&guard++<30){again=false;for(const c of allField())if(onField(c)&&(c.dmg>=def(c)||def(c)<=0)){await destroy(c,{sba:true});again=true}}}
-async function hit(t,n,src){if(!t)return;if(t.isPlayer){damagePlayer(t,n,null,src);return}if(!onField(t))return;t.dmg+=n;log(`${t.d.name} recebe ${n} de dano (${src}).`,'dmg');floatTxt(t,`-${n}`);await sba()}
+async function hit(t,n,src){if(!t)return;if(t.isPlayer){damagePlayer(t,n,null,src);return}if(!onField(t))return;if(G.fire&&t.d.cont==='Kurai'){n=Math.max(0,n-1);log(`❄ ${t.d.name} resiste ao fogo (-1 de dano).`)}else if(G.fire&&hasKw(t,'voar')){n+=1;log(`🔥 As asas de ${t.d.name} pegam fogo (+1 de dano).`)}t.dmg+=n;log(`${t.d.name} recebe ${n} de dano (${src}).`,'dmg');floatTxt(t,`-${n}`);await sba()}
 function checkOver(){if(G.over)return true;const lost=P.filter(p=>p.hp<=0||p.decked);if(!lost.length)return false;G.over=true;const winner=lost.length===2?null:P.find(p=>!lost.includes(p));setTimeout(()=>gameOver(winner),400);return true}
 
 /* ============================ CANCELAR JOGADA ======================== */
@@ -648,14 +650,15 @@ async function playCardInner(p,c,win){
   }else if(d.type==='equip'){if(onField(eqT)){eqT.equips.push(c);log(`${d.name} equipado em ${eqT.d.name}.`)}else toGrave(c)}
   else if(d.type==='totem'){p.totems.push(c)}
   else{
-    if(d.dmg){const t=await pickTarget(p,{title:`${d.name}: ${d.dmg} de dano`,dmg:d.dmg,instant:d.type==='instant'});if(t)await hit(t,d.dmg,d.name)}
-    else if(d.play)await d.play(p,c);
+    G.fire=!!(d.burn&&d.type==='instant');
+    try{if(d.dmg){const t=await pickTarget(p,{title:`${d.name}: ${d.dmg} de dano`,dmg:d.dmg,instant:d.type==='instant'});if(t)await hit(t,d.dmg,d.name)}
+    else if(d.play)await d.play(p,c);}finally{G.fire=false}
     if(!p.grave.includes(c)&&!p.void.includes(c))toGrave(c);
     if(d.type==='instant'&&d.burn){for(const m of allField())if(m.id==='mestreChamas'&&!m.noAbil){m.flame=(m.flame||0)+1;log('Mestre Kaldraniano das Chamas ganha +1/+0.')}}
   }
   const xp=d.xpGeodo?0:d.xpRoll?d6():cardXP(d);if(d.xpRoll)log(`d6 = ${xp}`);
   gainXP(p,xp);
-  if(d.prot){p.prot+=d.prot;log(`🛡 ${p.name} recebe ${d.prot} de Proteção.`,'heal')}
+  if(d.prot){const g=Math.max(0,Math.min(d.prot,RULES.maxProt-p.prot));p.prot+=g;log(g?`🛡 ${p.name} recebe ${g} de Proteção.`:`🛡 Proteção de ${p.name} já está no máximo (${RULES.maxProt}).`,'heal')}
   await sba();checkOver();render();return true}
 async function pickEquip(p,d){const ts=equipTargets(p,d);if(!ts.length)return null;
   if(p.isAI){if(d.id==='coleira')return opp(p).field.length?[...opp(p).field].sort((a,b)=>atk(b)-atk(a))[0]:null;const mine=ts.filter(c=>c.ctrl===p.id);return mine.sort((a,b)=>val(b)-val(a))[0]||null}
@@ -770,6 +773,7 @@ async function fight(att,blks){
   let r=atk(att);const toB=new Map();
   blks.forEach((b,i)=>{const need=Math.max(0,def(b)-b.dmg);const give=(i===blks.length-1&&!hasKw(att,'atropelar'))?r:Math.min(r,need);toB.set(b,give);r-=give});
   const trample=hasKw(att,'atropelar')?r:0;
+  if(att.d.cont==='Atharvash')for(const b of blks)if(b.d.cont==='Kurai'&&toB.get(b)>0)toB.set(b,toB.get(b)-1);
   let toA=blks.reduce((s,b)=>s+atk(b),0);
   for(const b of blks)if(b.id==='sereia'&&!b.noAbil&&toB.get(b)>0){const x=d6();log(`Sereia rola ${x}.`);if(x<=3){toB.set(b,0);log('Encantar: a Sereia não recebe dano.')}}
   for(const b of blks)if(onField(b)&&b.dmg+toB.get(b)>=def(b)&&await camoWindow(P[b.ctrl],b)){toA-=atk(b);toB.set(b,0)}
@@ -779,7 +783,7 @@ async function fight(att,blks){
     for(const b of live){const n=toB.get(b)||0;b.dmg+=n;floatTxt(b,`-${n}`);if(n)atharvashHeart(att)}
     att.dmg+=toA;floatTxt(att,`-${toA}`);for(const b of live)if(atk(b))atharvashHeart(b);
     log(`${att.d.name} causa ${live.map(b=>`${toB.get(b)||0} em ${b.d.name}`).join(', ')||'0'} · recebe ${toA}.`)}
-  if(trample>0&&onField(att)&&live.every(b=>b.dmg>=def(b))){log(`Kophesh: ${trample} de dano excedente passa ao oponente.`);damagePlayer(opp(A),trample,att)}
+  if(trample>0&&onField(att)&&live.every(b=>b.dmg>=def(b))){log(`Atropelar: ${trample} de dano excedente passa ao oponente${att.d.cont==='Gaia'?' (atravessa a Proteção)':''}.`);damagePlayer(opp(A),trample,att,null,att.d.cont==='Gaia')}
   const lanca=att.equips.some(e=>e.id==='lanca');
   const attDead=onField(att)&&att.dmg>=def(att);
   for(const b of live)if(onField(b)&&b.dmg>=def(b)){await onKill(att,b);await destroy(b,{killer:att,combat:true,toVoid:lanca})}
@@ -837,7 +841,7 @@ async function startTurn(p){
 async function turnBegin(p){
   p.sumUsed=0;p.knowUsed=false;p.lvlBonus=0;p.played=0;
   for(const c of p.field){if(c.wait){c.wait--;c.latency=c.wait>0}else c.latency=false;c.atkUsed=0;c.curled=false;if(c.suspended){c.suspended--;if(!c.suspended){log(`${c.d.name} termina o treinamento.`);if(c.trainBonus){c.trainBonus=false;c.mods.push({a:1,d:1});log(`${c.d.name} recebe +1/+1.`)}else gainXP(p,2,'Treinamento')}}}
-  {const n=p.totems.filter(t=>t.id==='circuitosProt').length;if(n){p.prot+=n;log(`🛡 Circuitos de Proteção: +${n} de Proteção.`,'heal')}}
+  {let n=p.totems.filter(t=>t.id==='circuitosProt').length;if(n&&p.prot<RULES.maxProt){n=Math.min(n,RULES.maxProt-p.prot);p.prot+=n;log(`🛡 Circuitos de Proteção: +${n} de Proteção.`,'heal')}}
   for(const e of p.grave.filter(x=>x.id==='estatuaViva')){if(p.xp<2)break;const yes=p.isAI?p.hand.length<4:await ask('Estátua Viva de Apólia',[{label:'Pagar 2 XP e recuperar',value:true,primary:true},{label:'Não',value:false}],{text:'Recuperar a Estátua Viva do cemitério para a mão?',preview:e});if(yes){p.xp-=2;removeFrom(p.grave,e);p.hand.push(e);log(`${p.name} paga 2 XP e recupera a Estátua Viva.`)}}
   for(const d of p.dots){damagePlayer(p,d.n,null,d.src);d.t--}p.dots=p.dots.filter(d=>d.t>0);
   for(const h of p.hots){heal(p,h.n,h.src);h.t--}p.hots=p.hots.filter(h=>h.t>0);
@@ -1060,6 +1064,13 @@ const RULES_HTML=`<ul>
 <li><b>Latência:</b> omnitas recém-baixados só atacam no próximo turno.</li>
 <li><b>Combate:</b> você declara um atacante; o oponente escolhe bloquear ou receber o dano direto. Vários omnitas podem bloquear o mesmo atacante; ele divide o dano entre eles. Cada omnita só pode bloquear um ataque por turno. O dano que sobra não passa para o jogador. Cada omnita ataca uma vez por turno (Golpe Duplo: duas).</li>
 <li><b>Voar:</b> só pode ser bloqueado por Voar ou Alcance.</li>
+<li><b>Proteção:</b> absorve o dano antes da vida. Ela se acumula até no máximo ${RULES.maxProt}.</li>
+<li><b>Ciclo dos continentes</b> (🔴 Atharvash vence 🟢 Gaia, que vence 🟡 Apólia, que vence 🔵 Kurai, que vence 🔴 Atharvash):
+ <br>🔥 <b>Fogo</b>: o dano de Execuções de queimar ignora a Proteção, e voadores recebem +1.
+ <br>🔥 <b>Queimadura</b>: quem recebe dano do Atharvash não pode recuperar vida até o fim do seu próximo turno.
+ <br>🌿 <b>Atropelar</b> da Gaia: o dano que sobra atravessa a Proteção.
+ <br>☀ <b>Luz</b>: o Consumir do Vazio não leva omnitas de Apólia junto.
+ <br>❄ <b>Gelo</b>: omnitas de Kurai recebem 1 a menos de dano de fogo e, ao bloquear, de omnitas do Atharvash.</li>
 <li><b>Execuções Instantâneas</b> podem ser usadas no seu turno ou em resposta ao oponente (quando ele joga uma carta ou ataca). <b>Execuções Regulares</b> só nas fases Inicial/Final do seu turno.</li>
 <li>Clique numa carta brilhante da mão para jogá-la; no combate, clique num omnita com brilho vermelho para atacar. Omnitas/totens com habilidade ficam clicáveis.</li></ul>`;
 function showRules(){const m=document.createElement('div');m.className='modal-bg';m.innerHTML=`<div class="modal"><h3>Como jogar</h3><div class="rules">${RULES_HTML}</div><p></p><button class="btn primary">Fechar</button></div>`;m.querySelector('button').onclick=()=>m.remove();document.body.appendChild(m)}
