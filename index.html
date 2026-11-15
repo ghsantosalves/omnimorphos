@@ -1253,7 +1253,7 @@ const RULES_HTML=`<ul>
 <li>Clique numa carta brilhante da mão para jogá-la; no combate, clique num omnita com brilho vermelho para atacar. Omnitas/totens com habilidade ficam clicáveis.</li></ul>`;
 const opt3dHTML=()=>`<label class="opt3d-l"><input type="checkbox" class="opt3d" ${SETTINGS.no3d?'':'checked'}> 🎲 Dados e moeda em 3D</label>`;
 document.addEventListener('change',e=>{if(e.target.classList&&e.target.classList.contains('opt3d')){SETTINGS.no3d=!e.target.checked;saveSettings();document.querySelectorAll('.opt3d').forEach(x=>x.checked=!SETTINGS.no3d)}});
-function showRules(){const m=document.createElement('div');m.className='modal-bg';m.innerHTML=`<div class="modal"><h3>Como jogar</h3><div class="rules">${RULES_HTML}</div><p>${opt3dHTML()}</p><button class="btn primary">Fechar</button></div>`;m.querySelector('button').onclick=()=>m.remove();document.body.appendChild(m)}
+function showRules(){const m=document.createElement('div');m.className='modal-bg';m.innerHTML=`<div class="modal"><h3>Como jogar</h3><div class="rules">${RULES_HTML}</div><p>${opt3dHTML()}</p><p><a class="btn" style="text-decoration:none;display:inline-block" href="regras.html" target="_blank" rel="noopener">📖 Regras completas</a></p><button class="btn primary">Fechar</button></div>`;m.querySelector('button').onclick=()=>m.remove();document.body.appendChild(m)}
 function gameOver(winner){if(G&&ONLINE()){G.winnerId=winner?winner.id:null;netFlushNow()}const m=document.createElement('div');m.className='modal-bg';const hot=HOT();const win=winner&&(ONLINE()?winner.id===VIEW:!winner.isAI);const title=winner===null?'Empate!':hot?`${winner.name} venceu!`:win?'Vitória!':'Derrota';m.innerHTML=`<div class="modal" style="text-align:center"><h3 style="font-size:28px">${title}</h3><p>${hot||win?'Boa aventura, Omnita!':'Os omnitas do oponente prevaleceram.'}</p><button class="btn primary">Jogar novamente</button></div>`;m.querySelector('button').onclick=()=>{m.remove();netLeave();showStart()};document.body.appendChild(m);render()}
 
 /* =========================== EVENTOS DA UI ========================== */
@@ -1400,7 +1400,7 @@ function showStart(){
     ${hot?'':`<div class="lbl">Dificuldade</div>${seg('diff',[['facil','Fácil'],['normal','Normal'],['dificil','Difícil']])}`}
     <div class="lbl">${hot?'Baralho do Jogador 1':'Seu baralho'}</div><div class="decks">${deckBtns(UI.d1,'d1',false)}</div>
     <div class="lbl">${hot?'Baralho do Jogador 2':'Baralho do oponente (computador)'}</div><div class="decks">${deckBtns(UI.d2,'d2',!hot)}</div>
-    <p style="margin-top:18px"><button class="btn primary" id="go" style="font-size:17px;padding:10px 28px">Jogar</button> <button class="btn" id="ed">Editor de baralhos</button></p><p>${opt3dHTML()}</p>
+    <p style="margin-top:18px"><button class="btn primary" id="go" style="font-size:17px;padding:10px 28px">Jogar</button> <button class="btn" id="ed">Editor de baralhos</button> <a class="btn" style="text-decoration:none;display:inline-block" href="regras.html" target="_blank" rel="noopener">📖 Regras completas</a></p><p>${opt3dHTML()}</p>
     <p class="muted" id="warn"></p>
     <details class="rules"><summary><b>Como jogar</b></summary>${RULES_HTML}</details></div>`;
     st.querySelectorAll('[data-d1]').forEach(el=>el.onclick=()=>{UI.d1=el.dataset.d1;draw_()});
@@ -1418,7 +1418,7 @@ function showStart(){
     <div class="online-box"><div><button class="btn primary" id="mk" style="font-size:16px;padding:9px 22px">Criar sala</button><p class="muted">Gera um código para enviar ao seu amigo.</p></div>
       <div><div style="display:flex;gap:6px;justify-content:center"><input id="ocode" class="inp" maxlength="6" placeholder="CÓDIGO" style="width:120px;text-transform:uppercase;text-align:center;letter-spacing:3px"><button class="btn" id="jn">Entrar</button></div><p class="muted">Digite o código que seu amigo enviou.</p></div></div>
     <p id="ost" class="ost"></p>
-    <p>${opt3dHTML()}</p></div>`;
+    <p><a class="btn" style="text-decoration:none;display:inline-block" href="regras.html" target="_blank" rel="noopener">📖 Regras completas</a></p><p>${opt3dHTML()}</p></div>`;
     const name=()=>{const v=($('#onm').value||'').trim().slice(0,18);try{localStorage.setItem('omni_name',v)}catch(e){}return v};
     st.querySelectorAll('[data-d1]').forEach(el=>el.onclick=()=>{UI.d1=el.dataset.d1;drawOnline()});
     st.querySelectorAll('[data-set]').forEach(el=>el.onclick=()=>{const k=el.dataset.set,v=el.dataset.val;UI[k]=v;draw_()});
