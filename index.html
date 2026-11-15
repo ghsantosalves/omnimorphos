@@ -220,7 +220,13 @@ button{font:inherit}
 #myhand{flex-wrap:nowrap;justify-content:center;gap:0;min-height:190px;padding:40px 6px 4px;overflow:visible}
 #myhand .card{margin-left:min(6px,calc((100vw - 80px - var(--n)*100px)/max(1,var(--n) - 1)));transform-origin:50% 130%;transform:rotate(calc((var(--i) - (var(--n) - 1)/2)*3deg));transition:transform .16s ease-out}
 #myhand .card:first-child{margin-left:0}
-#myhand .card.lift{transform:translateY(-34px) scale(1.16);z-index:20;box-shadow:0 0 0 2px var(--gold),0 10px 24px #000c}
+#myhand .card.lift{transform:translateY(-34px) scale(1.16);z-index:20;box-shadow:0 0 0 2px #fff,0 12px 26px #000e}
+#myhand .card.lift.lift-ok{box-shadow:0 0 0 3px var(--gold),0 0 22px #e0ad48cc,0 12px 26px #000e}
+#myhand .card.lift.lift-no{filter:saturate(.55) brightness(.85)}
+#myhand .card.lift::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);white-space:normal;width:170px;text-align:center;line-height:1.25;font-size:11px;font-weight:800;padding:3px 9px;border-radius:10px;z-index:30;box-shadow:0 2px 8px #000a}
+#myhand .card.lift-ok::after{background:var(--gold);color:#1b140c}
+#myhand .card.lift-no::after{background:#3a1c16;color:#ffb3a3;border:1px solid #8a3a2c}
+#myhand .card:not(.playable){filter:saturate(.7) brightness(.82)}
 #start{grid-template-columns:minmax(0,1fr);place-items:start center}
 #start .box{min-width:0}
 #start h1{font-size:clamp(26px,9vw,64px);letter-spacing:1px}
@@ -1145,7 +1151,7 @@ function render(){
   $('#oppfield').innerHTML=fieldHTML(A,false,myTurn);$('#oppback').innerHTML='';
   $('#myfield').innerHTML=fieldHTML(H,true,myTurn);$('#myback').innerHTML='';
   $('#myhand').innerHTML=H.hand.map(c=>{const ok=myTurn&&canPlay(H,c);return cardHTML(c,{act:'play',cls:(ok?'playable':'')+(LIFT===c.uid?' lift':'')})}).join('');
-  {const hs=document.querySelectorAll('#myhand .card');hs.forEach((el,i)=>{el.style.setProperty('--i',i);el.style.setProperty('--n',hs.length)})}
+  {const hs=document.querySelectorAll('#myhand .card');hs.forEach((el,i)=>{el.style.setProperty('--i',i);el.style.setProperty('--n',hs.length);if(LIFT===+el.dataset.uid){const c=INST.get(LIFT);const ok=myTurn&&canPlay(H,c);el.dataset.tip=ok?'▶ Toque de novo para jogar':'✋ '+(myTurn?(whyNot(H,c)||'Não pode ser jogada agora'):'Aguarde o seu turno');el.classList.add(ok?'lift-ok':'lift-no')}})}
   const ph=[['inicio','Início: efeitos do turno e compra de 1 carta'],['main1','Fase Inicial: jogar cartas e baixar omnitas'],['combat','Combate: atacar com omnitas prontos'],['main2','Fase Final: jogar mais cartas'],['fim','Fim do turno: passa a vez']];
   const NOMEF={main1:'Fase Inicial',combat:'Combate',main2:'Fase Final'};
   const L=level(H);const meu=G.active===VIEW;
