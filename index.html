@@ -1415,6 +1415,7 @@ function showStart(){
     <div class="lbl">Modo de jogo</div>${seg('mode',[['ai','Contra o computador'],['hot','2 jogadores (mesmo computador)'],['online','🌐 Online (código de sala)']])}
     <div class="lbl">Seu nome</div><input id="onm" class="inp" maxlength="18" placeholder="Seu nome" value="${esc(nm)}">
     <div class="lbl">Seu baralho</div><div class="decks">${deckBtns(UI.d1,'d1',false)}</div>
+    <p class="muted" style="font-size:13px">Seus baralhos personalizados aparecem aqui (em roxo). Eles ficam salvos neste aparelho e navegador: para usar um baralho feito em outro aparelho, gere o código dele no editor de lá e importe aqui. <button class="btn" id="ed2">✏️ Editor de baralhos</button></p>
     <div class="online-box"><div><button class="btn primary" id="mk" style="font-size:16px;padding:9px 22px">Criar sala</button><p class="muted">Gera um código para enviar ao seu amigo.</p></div>
       <div><div style="display:flex;gap:6px;justify-content:center"><input id="ocode" class="inp" maxlength="6" placeholder="CÓDIGO" style="width:120px;text-transform:uppercase;text-align:center;letter-spacing:3px"><button class="btn" id="jn">Entrar</button></div><p class="muted">Digite o código que seu amigo enviou.</p></div></div>
     <p id="ost" class="ost"></p>
@@ -1422,6 +1423,7 @@ function showStart(){
     const name=()=>{const v=($('#onm').value||'').trim().slice(0,18);try{localStorage.setItem('omni_name',v)}catch(e){}return v};
     st.querySelectorAll('[data-d1]').forEach(el=>el.onclick=()=>{UI.d1=el.dataset.d1;drawOnline()});
     st.querySelectorAll('[data-set]').forEach(el=>el.onclick=()=>{const k=el.dataset.set,v=el.dataset.val;UI[k]=v;draw_()});
+    $('#ed2').onclick=()=>{UI.mode='online';showEditor()};
     const ost=t=>{$('#ost').innerHTML=t};
     $('#mk').onclick=async()=>{if(deckSize(UI.d1)<60){ost('Complete o baralho no editor (mínimo 60 cartas).');return}const n=name()||'Anfitrião';ost('Criando sala…');$('#mk').disabled=true;$('#jn').disabled=true;
       try{const code=await netHost(n,UI.d1);ost(`Código da sala: <b class="code">${code}</b> <button class="btn" id="cp">Copiar</button><br>Envie para o seu amigo. Aguardando ele entrar… <button class="btn" id="cx">Cancelar</button>`);
