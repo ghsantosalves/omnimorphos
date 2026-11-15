@@ -102,6 +102,24 @@ button{font:inherit}
 .card.canatk{cursor:pointer;box-shadow:0 0 0 2px var(--red),0 0 16px #d8573f99}
 .card.canatk:hover{transform:translateY(-6px)}
 .card.clickable{cursor:pointer}
+.dice3d{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:#0008;cursor:pointer}
+.dice3d .dbox{text-align:center}
+.dice3d .dl{color:var(--gold);font-weight:800;font-size:15px;margin-bottom:4px;text-shadow:0 2px 6px #000}
+.dice3d .dr{font-family:Cinzel,serif;font-size:42px;font-weight:800;color:#fff;min-height:52px;opacity:0;transform:scale(.6);transition:.25s}
+.dice3d.done .dr{opacity:1;transform:none}
+.dice3d .dh{font-size:11px;color:var(--muted)}
+.opt3d-l{display:inline-flex;gap:7px;align-items:center;font-size:13px;color:var(--muted);cursor:pointer}.opt3d-l input{accent-color:var(--gold);width:16px;height:16px}
+.hand,.row{perspective:1000px}
+.card{transition:transform .12s,box-shadow .12s,rotate .18s ease-out}
+.card::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:5;opacity:0;transition:opacity .2s;background:radial-gradient(circle at var(--gx,50%) var(--gy,50%),#ffffff55,#ffffff10 35%,transparent 60%);mix-blend-mode:overlay}
+.card.tilt::before{opacity:1}
+.card.enter3d{animation:enter3d .5s cubic-bezier(.2,.8,.3,1.2)}
+@keyframes enter3d{from{transform:rotateY(100deg) translateY(-24px) scale(.85);opacity:.2}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.card.enter3d{animation:none}.card{transition:none}}
+.card.abil,.tile.abil{box-shadow:0 0 0 2px #8fd3ff,0 0 16px #6cc4ff99;animation:abilglow 1.8s ease-in-out infinite}
+.card.abil::after{content:'✨ Habilidade';position:absolute;top:-9px;left:50%;transform:translateX(-50%);z-index:3;background:#16324a;color:#bfe6ff;border:1px solid #6cc4ff;border-radius:9px;font-size:10px;font-weight:800;padding:0 7px;white-space:nowrap}
+@keyframes abilglow{50%{box-shadow:0 0 0 2px #8fd3ff,0 0 26px #6cc4ffcc}}
+.chip.susp{color:#f3d7a0;border-color:#a8814d;cursor:help}
 .card.clickable:hover{box-shadow:0 0 0 2px #fff6}
 .card.latent .art img{filter:grayscale(.6) brightness(.8)}
 .card.back{background:url(artes/verso.jpg) center/cover,repeating-linear-gradient(45deg,#3b2a1d,#3b2a1d 6px,#2b1f16 6px,#2b1f16 12px);border-color:#7b5a3a;width:46px;height:64px;padding:0}
@@ -170,7 +188,19 @@ button{font:inherit}
 .phasepop{display:none;position:absolute;bottom:calc(100% + 8px);right:0;z-index:20;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:260px;box-shadow:0 8px 24px #000a;font-size:12.5px}
 .phasebox:hover .phasepop,.phasebox.open .phasepop{display:block}
 .phasepop ol{margin:4px 0 0 18px;padding:0}.phasepop li{margin:3px 0;color:var(--muted)}.phasepop li.on{color:var(--gold);font-weight:800}
-.hint2{flex-basis:100%;font-size:11.5px;color:#d9c79a;text-align:right;line-height:1.3}
+.hint2{font-size:12px;color:#d9c79a;line-height:1.3}
+.pb-stats,.pb-piles{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#mybar.pbar{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:'l m' 'l r';gap:8px 18px;align-items:center}
+.pb-left{grid-area:l}.pb-mid{grid-area:m}.pb-right{grid-area:r}
+.phasebtn,.pb-turn .chip{white-space:nowrap}
+.pb-left{display:flex;flex-direction:column;gap:6px;min-width:0}
+.pb-mid{display:flex;flex-direction:column;gap:5px;min-width:0;border-left:1px solid var(--line);padding-left:16px}
+.pb-turn{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.pb-right{display:flex;gap:7px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.pb-right .btn{padding:6px 12px;font-size:13px}
+.sh{display:none}
+@media (max-width:1300px){#mybar.pbar{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'l l' 'm r'}.pb-mid{border-left:0;padding-left:0}}
+@media (max-width:900px){.lg{display:none}.sh{display:inline}.pbar .nm small{display:none}.pbar .hpbar,.pbar .xpbar{width:60px}.hint2{font-size:11px}#mybar.pbar{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'l l' 'm r'}.pb-right .btn{padding:6px 10px}.pb-mid{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:6px}.pb-right{justify-content:flex-start}}
 .turnchip{font-size:11.5px;font-weight:800;border-radius:10px;padding:1px 8px;background:#e0ad4826;color:var(--gold);border:1px solid #e0ad4866}
 .pass-bg{position:fixed;inset:0;background:radial-gradient(ellipse at center,#2f2117,#0e0a08);display:grid;place-items:center;z-index:80;padding:16px;text-align:center}
 .pass h2{font-family:Cinzel,serif;color:var(--gold);font-size:34px;margin:0 0 8px}
@@ -218,6 +248,49 @@ const $=s=>document.querySelector(s);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const rnd=n=>Math.floor(Math.random()*n);
 const d6=()=>1+rnd(6), d20=()=>1+rnd(20), coin=()=>Math.random()<.5;
+/* ---------------- dados e moeda em 3D (three.js, carregado só quando precisa) ---------------- */
+let THREE_P=null;
+function loadThree(){if(window.THREE)return Promise.resolve();if(!THREE_P)THREE_P=new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';sc.onload=ok;sc.onerror=()=>{THREE_P=null;no()};document.head.appendChild(sc)});return THREE_P}
+async function roll(sides,label){const r=1+rnd(sides);await show3D(sides===6?'d6':'d20',r,label);return r}
+async function flip(label){const w=coin();await show3D('coin',w?1:0,label);return w}
+function faceTex(draw){const cv=document.createElement('canvas');cv.width=cv.height=256;const g=cv.getContext('2d');draw(g);const t=new THREE.CanvasTexture(cv);t.anisotropy=4;return t}
+function pipFace(n){return faceTex(g=>{const gr=g.createLinearGradient(0,0,256,256);gr.addColorStop(0,'#fbf3e2');gr.addColorStop(1,'#e2d2b2');g.fillStyle=gr;g.fillRect(0,0,256,256);g.strokeStyle='#b8893a';g.lineWidth=14;g.strokeRect(7,7,242,242);
+  const P={1:[[2,2]],2:[[1,1],[3,3]],3:[[1,1],[2,2],[3,3]],4:[[1,1],[3,1],[1,3],[3,3]],5:[[1,1],[3,1],[2,2],[1,3],[3,3]],6:[[1,1],[3,1],[1,2],[3,2],[1,3],[3,3]]}[n];
+  for(const[x,y]of P){g.beginPath();g.arc(x*64,y*64,n===1?30:22,0,7);g.fillStyle=n===1?'#b3261e':'#2a1d14';g.fill()}})}
+function coinFace(win){return faceTex(g=>{const gr=g.createRadialGradient(110,100,10,128,128,130);gr.addColorStop(0,'#ffe9a6');gr.addColorStop(1,'#b8862e');g.fillStyle=gr;g.fillRect(0,0,256,256);g.strokeStyle='#7a5518';g.lineWidth=10;g.beginPath();g.arc(128,128,112,0,7);g.stroke();
+  g.fillStyle='#5a3c0e';g.font='bold 120px serif';g.textAlign='center';g.textBaseline='middle';g.fillText(win?'☀':'☾',128,136)})}
+async function show3D(kind,r,label){
+  if(AUTO||SETTINGS.no3d||typeof document==='undefined')return;
+  try{await loadThree()}catch(e){return}
+  const T=window.THREE;if(!T)return;
+  const ov=document.createElement('div');ov.className='dice3d';
+  const sz=Math.min(260,Math.round(innerWidth*0.6));
+  ov.innerHTML=`<div class="dbox"><div class="dl">${esc(label||'')}</div><canvas width="${sz*2}" height="${sz*2}" style="width:${sz}px;height:${sz}px"></canvas><div class="dr"></div><div class="dh">toque para pular</div></div>`;
+  document.body.appendChild(ov);const cv=ov.querySelector('canvas');
+  let rd;try{rd=new T.WebGLRenderer({canvas:cv,alpha:true,antialias:true})}catch(e){ov.remove();return}
+  const sc=new T.Scene(),cam=new T.PerspectiveCamera(35,1,0.1,50);cam.position.set(0,0,7);
+  sc.add(new T.AmbientLight(0xffffff,0.55));const dl=new T.DirectionalLight(0xffffff,0.9);dl.position.set(3,4,6);sc.add(dl);
+  let m,target;
+  if(kind==='d6'){const vals=[3,4,1,6,2,5];m=new T.Mesh(new T.BoxGeometry(1.7,1.7,1.7),vals.map(v=>new T.MeshStandardMaterial({map:pipFace(v),roughness:.45})));
+    target={1:[Math.PI/2,0,0],6:[-Math.PI/2,0,0],2:[0,0,0],5:[0,Math.PI,0],3:[0,-Math.PI/2,0],4:[0,Math.PI/2,0]}[r]}
+  else if(kind==='d20'){m=new T.Mesh(new T.IcosahedronGeometry(1.3,0),new T.MeshStandardMaterial({color:0x2f6fa8,roughness:.35,metalness:.2,flatShading:true}));
+    m.add(new T.LineSegments(new T.EdgesGeometry(m.geometry),new T.LineBasicMaterial({color:0xcfe8ff})));target=[0.4,0.6,0]}
+  else{const side=new T.MeshStandardMaterial({color:0x9a6f22,metalness:.6,roughness:.35});
+    m=new T.Mesh(new T.CylinderGeometry(1.25,1.25,0.16,48),[side,new T.MeshStandardMaterial({map:coinFace(true),metalness:.5,roughness:.4}),new T.MeshStandardMaterial({map:coinFace(false),metalness:.5,roughness:.4})]);
+    target=[r?Math.PI/2:-Math.PI/2,0,0]}
+  if(kind==='d6')target=[target[0]+0.32,target[1]-0.42,target[2]];
+  sc.add(m);
+  const turns=kind==='coin'?[8,0,0]:[2+rnd(2),2+rnd(2),1+rnd(2)];
+  const D=1300;let skip=false;ov.onclick=()=>{skip=true};
+  await new Promise(done=>{const t0=performance.now();
+    const step=now=>{let t=Math.min(1,(now-t0)/D);if(skip)t=1;const e=1-Math.pow(1-t,3);
+      m.rotation.set(target[0]+turns[0]*2*Math.PI*(1-e),target[1]+turns[1]*2*Math.PI*(1-e),target[2]+turns[2]*2*Math.PI*(1-e));
+      m.position.y=Math.abs(Math.sin(t*Math.PI*3))*(1-t)*1.4;rd.render(sc,cam);
+      if(t<1)requestAnimationFrame(step);else done()};requestAnimationFrame(step)});
+  ov.querySelector('.dr').textContent=kind==='coin'?(r?'Ganhou!':'Perdeu!'):String(r);ov.classList.add('done');
+  await new Promise(ok=>{const tm=setTimeout(ok,skip?350:850);ov.onclick=()=>{clearTimeout(tm);ok()}});
+  ov.remove();try{rd.dispose();rd.forceContextLoss()}catch(e){}}
+
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let UID=1; const INST=new Map();
@@ -230,7 +303,7 @@ function O(id,name,cont,cat,xp,lvl,atk,def,text,o={}){DEF[id]={id,name,cont,type
 function S(id,name,cont,type,xp,lvl,text,o={}){DEF[id]={id,name,cont,type,xp,lvl,text,kw:[],...o}}
 function T(id,name,cont,cat,atk,def,o={}){DEF[id]={id,name,cont,type:'token',cat,xp:0,lvl:0,atk,def,text:'Ficha.',kw:[],...o}}
 const TYPE_LABEL={omnita:'Omnita',token:'Ficha',equip:'Equipamento',totem:'Totem',knowledge:'Conhecimento',instant:'Execução Instantânea',regular:'Execução Regular'};
-const KW_LABEL={obstinacao:'Obstinação',agil:'Sem Latência',atropelar:'Atropelar',voar:'Voar',alcance:'Alcance',golpe:'Golpe Duplo',consumir:'Consumir',montaria:'Montaria',treinamento:'Treinamento',imbloqueavel:'Imbloqueável',queimadura:'Queimadura',rescalor:'Resistência ao Calor',runica:'Proteção Rúnica'};
+const KW_LABEL={obstinacao:'Obstinação',agil:'Sem Latência',atropelar:'Atropelar',voar:'Voar',alcance:'Alcance',golpe:'Golpe Duplo',consumir:'Consumir',montaria:'Montaria',treinamento:'Suspender',imbloqueavel:'Imbloqueável',queimadura:'Queimadura',rescalor:'Resistência ao Calor',runica:'Proteção Rúnica'};
 const ANIMAL=['Ave','Mamífero','Réptil','Felino','Anfíbio','Sapo','Peixe','Elefante','Cobra','Aranha','Molusco','Urso','Pangolim','Inseto','Fera'];
 const isAnimal=d=>(d.type==='omnita'||d.type==='token')&&ANIMAL.some(a=>d.cat.includes(a));
 const isHumanoid=c=>/Humano|Humanoide/.test(c.d.cat);
@@ -247,12 +320,12 @@ O('mestreChamas','Mestre Kaldraniano das Chamas','Atharvash','Humano Feiticeiro'
 O('dragaoPedra','Dragão de Pedra','Atharvash','Dragão',6,5,6,5,'Tremor: quando esta carta entra, o oponente descarta 2 cartas.',{flavor:'Um dragão que habita as montanhas de Atharvash.',enter:async(c,p)=>{await discardChoose(opp(p),2,'Tremor! Descarte 2 cartas')}});
 O('espiritoFogo','Espírito Elemental de Fogo','Atharvash','Espírito Elemental',6,6,2,2,'Se esta carta atacar o oponente diretamente, jogue um d6: este é o número de ataques que ele recebe.');
 O('arqueiroK','Arqueiro Kaldraniano','Atharvash','Humano Arqueiro',1,1,2,1,'',{flavor:'Os jovens Kaldranianos podem surpreender com os equipamentos corretos.'});
-O('aranthor','Lorde Aranthor, o Exilado','Atharvash','Humano Lorde Guerreiro',9,7,6,7,'Ao baixar, fica suspenso por 3 turnos; ao fim do 3º turno entra em jogo com +2/+3. Cada omnita destruído por Aranthor vira uma ficha Zumbi 1/1 sua.',{suspendOnPlay:3});
+O('aranthor','Lorde Aranthor, o Exilado','Atharvash','Humano Lorde Guerreiro',9,7,6,7,'Suspender 3: pode ser baixado suspenso por 3 turnos (revelado ao oponente); ao entrar, recebe +2/+3. Cada omnita destruído por Aranthor vira uma ficha Zumbi 1/1 sua.',{kw:['treinamento'],susp:{t:3,txt:'+2/+3 ao entrar',bonus:async c=>{c.mods.push({a:2,d:3});log(`${c.d.name} recebe +2/+3!`)}}});
 O('urso','Urso Marrom Gigante','Atharvash','Mamífero Gigante',8,5,5,5,'',{flavor:'Este urso imponente percorre as cordilheiras de Atharvash.'});
 O('iniciado','Iniciado Kaldraniano','Atharvash','Humano Mago',3,2,1,1,'Uma vez por turno: escolha um alvo para receber 2 de dano.',{act:{label:'Causar 2 de dano',run:async(c,p)=>{const t=await pickTarget(p,{title:'Iniciado Kaldraniano: 2 de dano',dmg:2});if(t)await hit(t,2,'Iniciado')},ai:p=>bestTargetScore(p,{dmg:2})}});
 O('drakara','Cavaleira Drakara','Atharvash','Humano Cavaleiro Réptil',5,3,3,4,'Quando Drakara entrar, procure no baralho outro omnita Réptil e adicione à mão. Embaralhe.',{enter:async(c,p)=>{await search(p,x=>x.d.type==='omnita'&&x.d.cat.includes('Réptil'),'Drakara: escolha um omnita Réptil')}});
-O('bruxaPurpura','Bruxa Púrpura','Atharvash','Humano Bruxo',3,1,2,1,'Ao entrar, jogue uma moeda: se ganhar, o oponente queima 2 por 3 turnos. Se perder, você queima 2 por 3 turnos.',{enter:async(c,p)=>{const w=coin();const t=w?opp(p):p;log(`Moeda: ${w?'ganhou':'perdeu'}! ${t.name} queimará 2 por 3 turnos.`,'dmg');t.dots.push({n:2,t:3,src:'Bruxa Púrpura'})}});
-O('combatente','Combatente Kaldraniano','Atharvash','Humano Guerreiro',2,1,2,2,'Ataque Rápido: pode atacar no turno em que entra. Treinamento: suspenda esta carta por 2 turnos e receba 2 de experiência adicional.',{kw:['treinamento','agil']});
+O('bruxaPurpura','Bruxa Púrpura','Atharvash','Humano Bruxo',3,1,2,1,'Ao entrar, jogue uma moeda: se ganhar, o oponente queima 2 por 3 turnos. Se perder, você queima 2 por 3 turnos.',{enter:async(c,p)=>{const w=await flip('Bruxa Púrpura');const t=w?opp(p):p;log(`Moeda: ${w?'ganhou':'perdeu'}! ${t.name} queimará 2 por 3 turnos.`,'dmg');t.dots.push({n:2,t:3,src:'Bruxa Púrpura'})}});
+O('combatente','Combatente Kaldraniano','Atharvash','Humano Guerreiro',2,1,2,2,'Ataque Rápido: pode atacar no turno em que entra. Suspender 2: pode ser baixado suspenso por 2 turnos (revelado ao oponente); ao entrar, receba 2 de experiência.',{kw:['treinamento','agil'],susp:{t:2,txt:'+2 XP ao entrar',bonus:async(c,p)=>gainXP(p,2,'Suspender')}});
 O('salamandra','Salamandra Vulcânica Filhote','Atharvash','Réptil',2,2,2,2,'Montaria: equipe a um omnita humanoide/humano para adicionar seu ataque e defesa.',{kw:['montaria'],flavor:'Uma pequena salamandra comum das regiões vulcânicas.'});
 O('slime','Slime Explosivo','Atharvash','Slime',1,1,1,1,'Quando esta carta é derrotada em combate, o oponente recebe 1 de dano.',{death:async(c,p,info)=>{if(info.combat)damagePlayer(opp(p),1,null,'Slime Explosivo')}});
 O('espadachim','Espadachim Kaldraniano','Atharvash','Humano Guerreiro',2,2,2,1,'Ataque Rápido: pode atacar no turno em que entra. Golpe Duplo: pode atacar duas vezes por turno.',{kw:['golpe','agil']});
@@ -281,7 +354,7 @@ S('curiosidade','Curiosidade','Atharvash','instant',1,1,'Olhe as duas primeiras 
 S('raioAterr','Raio Aterrorizador Vermelho','Atharvash','instant',2,2,'Cause 3 de dano a qualquer alvo. Fogo: ignora Proteção; voadores recebem +1.',{burn:true,...dmgSpell(3)});
 S('explosaoFinal','Explosão Final','Atharvash','instant',3,2,'Cause 2 de dano a todos os omnitas oponentes. A cada omnita eliminado neste turno, receba 2 de experiência.',{burn:true,play:async p=>{const o=opp(p);const before=o.field.length;for(const c of [...o.field])if(!hasKw(c,'runica'))c.dmg+=hasKw(c,'rescalor')?1:hasKw(c,'voar')?3:2;log('2 de dano em todos os omnitas do oponente.','dmg');await sba();const k=Math.max(0,before-o.field.length);if(k)gainXP(p,2*k,'Explosão Final')},ai:p=>{const k=opp(p).field.filter(c=>def(c)-c.dmg<=2).length;return k>=1?14+k*8:0}});
 S('furia','Fúria Atharvashiana','Atharvash','instant',1,1,'Todos os seus omnitas ganham +0/+2 até o fim do turno.',{play:async p=>{p.field.forEach(c=>c.mods.push({a:0,d:2,eot:true}))},ai:()=>0});
-S('botanica','Botânica Perigosa','Atharvash','knowledge',5,1,'Receba 5 de experiência. Esta carta não pode ser anulada. Jogue uma moeda: se ganhar, cause 2 de dano a qualquer alvo.',{play:async p=>{if(coin()){log('Moeda: ganhou!');const t=await pickTarget(p,{title:'Botânica Perigosa: 2 de dano',dmg:2});if(t)await hit(t,2,'Botânica Perigosa')}else log('Moeda: perdeu.')}});
+S('botanica','Botânica Perigosa','Atharvash','knowledge',5,1,'Receba 5 de experiência. Esta carta não pode ser anulada. Jogue uma moeda: se ganhar, cause 2 de dano a qualquer alvo.',{play:async p=>{if(await flip('Botânica Perigosa')){log('Moeda: ganhou!');const t=await pickTarget(p,{title:'Botânica Perigosa: 2 de dano',dmg:2});if(t)await hit(t,2,'Botânica Perigosa')}else log('Moeda: perdeu.')}});
 S('sabedoria','Sabedoria Ancestral','Atharvash','knowledge',3,1,'Receba 3 de experiência. Esta carta não pode ser anulada.');
 S('pergaminhos','Pergaminhos Proibidos','Atharvash','knowledge',4,1,'Receba 4 de experiência. Esta carta não pode ser anulada.');
 S('livroA','Livro Carnívoro','Atharvash','knowledge',2,1,'Receba 2 de experiência. Esta carta não pode ser anulada. Cause 1 de dano a qualquer alvo.',{play:async p=>{const t=await pickTarget(p,{title:'Livro Carnívoro: 1 de dano',dmg:1});if(t)await hit(t,1,'Livro Carnívoro')}});
@@ -291,7 +364,7 @@ S('engenheiro','Engenheiro Confuso','Atharvash','knowledge','?',2,'Jogue um d6: 
 /* ------------------------------- GAIA ------------------------------ */
 O('gaia','Deusa Gaia','Gaia','Deusa Superior',8,8,5,5,'Esta carta recebe +1/+1 para cada omnita de tipo animal que você controla em jogo.',{stat:(c,p)=>{const n=p.field.filter(x=>x!==c&&isAnimal(x.d)).length;return[n,n]}});
 O('cavaleiroElefante','Cavaleiro Elefante','Gaia','Cavaleiro Elefante',2,4,4,5,'Atropelar. Quando esta carta entrar em jogo, procure em seu baralho outro omnita Elefante e adicione à mão. Embaralhe.',{kw:['atropelar'],enter:async(c,p)=>{await search(p,x=>x.d.type==='omnita'&&/Elefante/.test(x.d.name+x.d.cat),'Cavaleiro Elefante: escolha um Elefante')}});
-O('harpiaGuerreira','Harpia Guerreira','Gaia','Humano Ave',4,2,2,2,'Voar. Treinamento.',{kw:['voar','treinamento']});
+O('harpiaGuerreira','Harpia Guerreira','Gaia','Humano Ave',4,2,2,2,'Voar. Suspender 2: pode ser baixada suspensa por 2 turnos (revelada ao oponente); ao entrar, receba 2 de experiência.',{kw:['voar','treinamento'],susp:{t:2,txt:'+2 XP ao entrar',bonus:async(c,p)=>gainXP(p,2,'Suspender')}});
 O('cobra','Cobra Coral','Gaia','Réptil Cobra',4,2,2,2,'Veneno: se o ataque for direto ao oponente, ele perde 2 pontos de vida por 3 turnos.');
 O('harpiaArqueira','Harpia Arqueira','Gaia','Humano Ave Arqueiro',3,2,2,2,'Voar. Golpe Duplo.',{kw:['voar','golpe']});
 O('harpiaGuerreiro','Harpia Guerreiro','Gaia','Humano Ave',4,3,2,3,'Voar.',{kw:['voar']});
@@ -324,7 +397,7 @@ S('magifruto','Magifruto','Gaia','regular',1,1,'Recupere 2 pontos de vida.',{pla
 S('construindo','Construindo Divindades','Gaia','regular',3,1,'Procure em seu cemitério ou baralho uma carta Totem e adicione à mão. Embaralhe.',{can:p=>[...p.deck,...p.grave].some(x=>x.d.type==='totem'),play:async p=>{await search(p,x=>x.d.type==='totem','Construindo Divindades: escolha um Totem',{from:['deck','grave']})},ai:()=>10});
 S('paleo','Descoberta Paleontológica','Gaia','regular',3,1,'Recupere do seu cemitério uma carta omnita animal e adicione à mão. (Humanos comuns não contam; Humano Ave, Bruxo etc. contam.)',{can:p=>p.grave.some(x=>isAnimal(x.d)),play:async p=>{await search(p,x=>isAnimal(x.d),'Descoberta Paleontológica',{from:['grave']})},ai:()=>10});
 S('driade','Canto da Dríade','Gaia','regular',2,1,'Recupere 4 pontos de vida.',{play:async p=>heal(p,4,'Canto da Dríade'),ai:p=>p.hp<=15?12:0});
-S('perdido','Perdido na Floresta','Gaia','regular',3,1,'Se o oponente não tiver nenhum omnita em jogo, olhe a mão dele, escolha um omnita e jogue um d6. 1-2: a carta vai para o cemitério. 3-4: vai para o vazio. 5-6: entra em jogo do seu lado.',{play:async p=>{const o=opp(p);if(o.field.length){log('O oponente tem omnitas em jogo: sem efeito.');return}const oms=o.hand.filter(x=>x.d.type==='omnita');log(`${p.name} olha a mão de ${o.name}.`);if(!oms.length){log('Nenhum omnita na mão do oponente.');return}const c=await chooseCard(p,'Perdido na Floresta: escolha um omnita',oms,{ai:x=>val(x)});if(!c)return;removeFrom(o.hand,c);const r=d6();log(`d6 = ${r}`);if(r<=2){toGrave(c);log(`${c.d.name} vai para o cemitério.`)}else if(r<=4){toVoid(c);log(`${c.d.name} vai para o vazio.`)}else{enterField(p,c);log(`${c.d.name} entra em jogo do lado de ${p.name}!`)}},ai:p=>opp(p).field.length===0&&opp(p).hand.length>=3?9:0});
+S('perdido','Perdido na Floresta','Gaia','regular',3,1,'Se o oponente não tiver nenhum omnita em jogo, olhe a mão dele, escolha um omnita e jogue um d6. 1-2: a carta vai para o cemitério. 3-4: vai para o vazio. 5-6: entra em jogo do seu lado.',{play:async p=>{const o=opp(p);if(o.field.length){log('O oponente tem omnitas em jogo: sem efeito.');return}const oms=o.hand.filter(x=>x.d.type==='omnita');log(`${p.name} olha a mão de ${o.name}.`);if(!oms.length){log('Nenhum omnita na mão do oponente.');return}const c=await chooseCard(p,'Perdido na Floresta: escolha um omnita',oms,{ai:x=>val(x)});if(!c)return;removeFrom(o.hand,c);const r=await roll(6,'Perdido na Floresta');log(`d6 = ${r}`);if(r<=2){toGrave(c);log(`${c.d.name} vai para o cemitério.`)}else if(r<=4){toVoid(c);log(`${c.d.name} vai para o vazio.`)}else{enterField(p,c);log(`${c.d.name} entra em jogo do lado de ${p.name}!`)}},ai:p=>opp(p).field.length===0&&opp(p).hand.length>=3?9:0});
 S('aguas','Águas Restauradoras','Gaia','regular',3,1,'Recupere 2 pontos de vida por 3 turnos.',{play:async p=>{p.hots.push({n:2,t:3,src:'Águas Restauradoras'});log(`${p.name} recuperará 2 de vida por 3 turnos.`,'heal')},ai:p=>p.hp<=16?10:0});
 S('catalogo','Catálogo Animal','Gaia','regular',2,1,'Escolha uma carta animal do seu baralho e adicione à mão. Embaralhe.',{play:async p=>{await search(p,x=>isAnimal(x.d),'Catálogo Animal')},ai:()=>9});
 S('estatua','Estátua de Pedra de Gaia','Gaia','totem',1,1,'(Simplificado) Sempre que um omnita animal seu seria destruído por um efeito (fora de combate), você pode descartar uma carta para evitar a destruição.',{ai:()=>12});
@@ -343,11 +416,11 @@ O('cavaloVazio','Cavalo do Vazio','Kurai','Besta Vazio',3,3,3,3,'Montaria. Consu
 O('tigre','Tigre Nevado','Kurai','Mamífero Felino',4,2,3,2,'',{flavor:'Uma espécie de felino de Kurai.'});
 O('baiacu','Baiacu','Kurai','Peixe',3,1,2,1,'Quando esta carta entrar, cause 2 de dano por 2 turnos ao omnita escolhido.',{enter:async(c,p)=>{const t=await pickTarget(p,{title:'Baiacu: 2 de dano por 2 turnos',kind:'omnita',dmg:2,optional:true});if(!t)return;await hit(t,2,'Baiacu');p.delayed.push({t:1,label:'Veneno do Baiacu',fn:async()=>{if(onField(t)){G.effSrc=c;try{await hit(t,2,'Baiacu')}finally{G.effSrc=null}}}})}});
 O('pangolim','Pangolim Nevado','Kurai','Mamífero Pangolim',2,2,2,2,'Pode se enrolar na fase inicial, trocando ataque e defesa para 0/4 até a sua próxima fase inicial.',{act:{label:'Enrolar (0/4)',can:(c,p)=>G.phase==='main1'&&!c.curled,run:async c=>{c.curled=true;log('Pangolim Nevado se enrola (0/4).')},ai:()=>0}});
-O('espiritoGelo','Espírito Elemental de Gelo','Kurai','Espírito Elemental',6,4,2,2,'Uma vez por turno: jogue um d20; se o resultado for acima de 15, escolha uma carta ativa e destrua.',{act:{label:'Rolar d20 (destruir)',run:async(c,p)=>{const r=d20();log(`d20 = ${r}`);if(r<=15){log('Falhou.');return}const t=await pickTarget(p,{title:'Espírito de Gelo: destrua uma carta ativa',kind:'card',destroy:true});if(!t)return;if(t.d.type==='totem'){removeFrom(P[t.ctrl].totems,t);toGrave(t);log(`${t.d.name} é destruído.`)}else await destroy(t,{})},ai:p=>opp(p).field.length||opp(p).totems.length?6:0}});
+O('espiritoGelo','Espírito Elemental de Gelo','Kurai','Espírito Elemental',6,4,2,2,'Uma vez por turno: jogue um d20; se o resultado for acima de 15, escolha uma carta ativa e destrua.',{act:{label:'Rolar d20 (destruir)',run:async(c,p)=>{const r=await roll(20,'Espírito Elemental de Gelo');log(`d20 = ${r}`);if(r<=15){log('Falhou.');return}const t=await pickTarget(p,{title:'Espírito de Gelo: destrua uma carta ativa',kind:'card',destroy:true});if(!t)return;if(t.d.type==='totem'){removeFrom(P[t.ctrl].totems,t);toGrave(t);log(`${t.d.name} é destruído.`)}else await destroy(t,{})},ai:p=>opp(p).field.length||opp(p).totems.length?6:0}});
 O('dragaoGelo','Dragão de Gelo','Kurai','Dragão',1,7,6,4,'Voar. Como custo adicional para jogar esta carta, envie 3 cartas da sua mão ao vazio.',{kw:['voar'],can:p=>p.hand.length>=4,cost:async(p,self)=>{const others=p.hand.filter(x=>x!==self);const cs=await chooseMulti(p,'Dragão de Gelo: envie 3 cartas ao vazio',others,3,3,{ai:()=>[...others].sort((a,b)=>aiCardValue(p,a)-aiCardValue(p,b)).slice(0,3)});if(!cs||cs.length<3)return false;cs.forEach(c=>{removeFrom(p.hand,c);toVoid(c)});return true}});
-O('monge','Monge Iniciado Asura','Kurai','Humano Monge',1,1,1,2,'',{flavor:'Um monge habitante comum na região de Kurai.'});
+O('monge','Monge Iniciado Asura','Kurai','Humano Monge',1,1,1,1,'',{flavor:'Um monge habitante comum na região de Kurai.'});
 O('yeti','Yeti','Kurai','Monstro Gigante',6,5,3,6,'',{flavor:'Vive nas cavernas geladas de Kurai e possui uma pseudo consciência.'});
-O('iceGolem','Golem de Gelo','Kurai','Golem',1,1,1,3,'',{flavor:'Um golem criado pelos monges de Asura.'});
+O('iceGolem','Golem de Gelo','Kurai','Golem',1,1,1,2,'',{flavor:'Um golem criado pelos monges de Asura.'});
 O('mongeAdepto','Monge Adepto Asura','Kurai','Humano Monge',2,2,2,2,'',{flavor:'Um monge habitante comum na região de Kurai.'});
 O('asura','Asura','Kurai','Deusa',8,4,3,3,'Quando esta carta entra em jogo, ganhe experiência igual ao número de cartas no vazio. Sempre que uma carta for enviada ao vazio, ganhe 1 de experiência.',{enter:async(c,p)=>{const n=P[0].void.length+P[1].void.length;if(n)gainXP(p,n,'Asura')}});
 O('morcego','Morcego do Vazio','Kurai','Besta Vazio',1,1,1,1,'Voar. Consumir: quando esta carta é destruída, destrua também a carta que a destruiu (em combate ou por habilidade de outra carta em jogo).',{kw:['voar','consumir'],flavor:'Um morcego originário da dimensão do vazio.'});
@@ -437,7 +510,7 @@ S('geodo','Omni Geodo','x','instant','?',1,'Complete a experiência que falta pa
 for(const id of ['falcao','fada','salamandra','mestreChamas','espiritoFogo','fenix']){DEF[id].kw=[...DEF[id].kw,'queimadura'];DEF[id].text='Queimadura: quando causa dano ao oponente, ele não recupera vida até o fim do próximo turno dele. '+DEF[id].text}
 for(const id of ['iceGolem','yeti','espiritoGelo','dragaoGelo','pangolim','tigre','monge','mongeAdepto','mongeMestre','lutadorAsuriano','panda','pescador','trollin','asura']){DEF[id].kw=[...DEF[id].kw,'rescalor'];DEF[id].text='Resistência ao Calor: recebe 1 a menos de dano de fogo e de omnitas de Atharvash. '+DEF[id].text}
 
-for(const id of ['falcao','arqueiroK','mestreChamas']){DEF[id].kw=[...DEF[id].kw,'agil'];DEF[id].text='Ataque Rápido: pode atacar no turno em que entra. '+DEF[id].text}
+for(const id of ['falcao','arqueiroK','drakara','mestreChamas']){DEF[id].kw=[...DEF[id].kw,'agil'];DEF[id].text='Ataque Rápido: pode atacar no turno em que entra. '+DEF[id].text}
 
 /* ------------------------------ FICHAS ----------------------------- */
 T('tDjin','Djin','Apólia','Espírito Djin',1,1,{kw:['voar']});
@@ -650,6 +723,12 @@ async function playCardInner(p,c,win){
   let eqT=null,mountT=null;
   if(d.type==='equip'){eqT=await pickEquip(p,d);if(!eqT){p.hand.push(c);log('Cancelado.');render();return false}}
   if(d.type==='omnita'&&d.kw.includes('montaria')){const hosts=p.field.filter(isHumanoid);if(hosts.length){mountT=p.isAI?null:await ask(`${d.name}: Montaria`,[{label:'Colocar em campo',value:null,primary:true},...hosts.map(h=>({card:h,value:h,label:'Equipar como montaria'}))])}}
+  c.suspChoice=false;
+  if(d.type==='omnita'&&d.susp&&!mountT){
+    if(p.isAI)c.suspChoice=p.hp>=12&&opp(p).field.reduce((t,x)=>t+atk(x),0)<p.hp/2;
+    else c.suspChoice=await ask(`${d.name}: como baixar?`,[{label:'Baixar normal',value:false,primary:true},{label:`Baixar suspensa (${d.susp.t} turnos, ${d.susp.txt})`,value:true}],{preview:c,text:'Suspensa: a carta fica revelada ao oponente e entra em jogo depois, com o efeito extra.',cancel:'Cancelar'});
+    if(c.suspChoice==null)throw CANCEL;
+    if(c.suspChoice)log(`⏳ ${p.name} baixa ${d.name} suspensa por ${d.susp.t} turnos (${d.susp.txt}).`)}
   if(d.type==='omnita')p.sumUsed+=d.lvl;
   if(d.type==='knowledge')p.knowUsed=true;
   render();
@@ -657,7 +736,8 @@ async function playCardInner(p,c,win){
   if(G.over)return true;
   // resolução
   if(d.type==='omnita'){
-    if(d.suspendOnPlay){p.delayed.push({t:d.suspendOnPlay,label:d.name,fn:async()=>{enterField(p,c);c.mods.push({a:2,d:3});log(`${d.name} entra em jogo com +2/+3!`)}});log(`${d.name} fica suspenso por ${d.suspendOnPlay} turnos.`)}
+    if(c.suspChoice){p.delayed.push({t:d.susp.t,label:d.name,uid:c.uid,susp:true,fn:async()=>{enterField(p,c);log(`⏳ ${d.name} sai da suspensão e entra em jogo.`);await d.susp.bonus(c,p);if(d.enter){G.effSrc=c;try{await d.enter(c,p)}finally{G.effSrc=null}}}})}
+    else if(d.suspendOnPlay){p.delayed.push({t:d.suspendOnPlay,label:d.name,fn:async()=>{enterField(p,c);c.mods.push({a:2,d:3});log(`${d.name} entra em jogo com +2/+3!`)}});log(`${d.name} fica suspenso por ${d.suspendOnPlay} turnos.`)}
     else if(mountT&&onField(mountT)){resetCard(c);c.ctrl=p.id;mountT.equips.push(c);log(`${d.name} é equipado como montaria em ${mountT.d.name}.`)}
     else{enterField(p,c);if(d.enter){G.effSrc=c;try{await d.enter(c,p)}finally{G.effSrc=null}}}
   }else if(d.type==='equip'){if(onField(eqT)){eqT.equips.push(c);log(`${d.name} equipado em ${eqT.d.name}.`)}else toGrave(c)}
@@ -669,7 +749,7 @@ async function playCardInner(p,c,win){
     if(!p.grave.includes(c)&&!p.void.includes(c))toGrave(c);
     if(d.type==='instant'&&d.burn){for(const m of allField())if(m.id==='mestreChamas'&&!m.noAbil){m.flame=(m.flame||0)+1;log('Mestre Kaldraniano das Chamas ganha +1/+0.')}}
   }
-  const xp=d.xpGeodo?0:d.xpRoll?d6():cardXP(d);if(d.xpRoll)log(`d6 = ${xp}`);
+  const xp=d.xpGeodo?0:d.xpRoll?await roll(6,d.name):cardXP(d);if(d.xpRoll)log(`d6 = ${xp}`);
   gainXP(p,xp);
   if(d.prot){addProt(p,d.prot);log(`🛡 ${p.name} recebe ${d.prot} de Proteção (dura ${RULES.protTurns} turnos).`,'heal')}
   await sba();checkOver();render();return true}
@@ -706,14 +786,23 @@ async function responseWindow(R,caster,card){
 /* ============================== COMBATE ============================= */
 function canAttack(c){const p=P[c.ctrl];return !G.over&&G.active===p.id&&G.phase==='combat'&&onField(c)&&!c.latency&&!c.frozen&&!c.suspended&&!isPrisoned(c)&&!c.curled&&c.atkUsed<(hasKw(c,'golpe')?2:1)&&atk(c)>0}
 function canBlock(b,att){if(b.ctrl===att.ctrl||!onField(b)||b.noBlock===G.turnNo||b.blockedTurn===G.turnNo||b.frozen||b.suspended||isPrisoned(b))return false;const k=kws(att);if(k.has('imbloqueavel'))return false;if(k.has('voar')){const kb=kws(b);return kb.has('voar')||kb.has('alcance')}return true}
+const offPos=c=>c.attackedTurn!==undefined&&c.attackedTurn===G.turnNo-1&&G.active!==c.ctrl;   // Fora de Posição
 const minBlockers=att=>hasKw(att,'obstinacao')?2:1;
 async function attack(att){
-  const A=P[att.ctrl],D=opp(A);G.busy=true;att.atkUsed++;G.curAtt=att;G.cancelAttack=false;G.redirect=null;
+  const A=P[att.ctrl],D=opp(A);G.busy=true;att.atkUsed++;att.attackedTurn=G.turnNo;G.curAtt=att;G.cancelAttack=false;G.redirect=null;
   log(`⚔ ${att.d.name} (${atk(att)}/${def(att)}) ataca!`,'atk');render();flash(att);
   if(att.equips.some(e=>e.id==='coleira'))damagePlayer(A,1,null,'Coleira de Controle');
   if(G.over)return;
   let blks=await defend(D,att);
   for(const b of blks)b.blockedTurn=G.turnNo;   // já bloqueou neste turno
+  // Fora de Posição: quem atacou no último turno rola 1d6 para conseguir bloquear (1-3 bloqueia, 4-6 falha)
+  if(blks.some(b=>offPos(b)&&b.forcedT!==G.turnNo)){let kept=[];
+    for(const b of blks){if(offPos(b)&&b.forcedT!==G.turnNo){const r=await roll(6,`${b.d.name}: fora de posição (1–3 bloqueia)`);floatTxt(b,`🎲 ${r}`);
+      if(r<=3)log(`🎲 ${b.d.name} está fora de posição e rola ${r}: chega a tempo e bloqueia!`,'atk');
+      else{log(`🎲 ${b.d.name} está fora de posição e rola ${r}: não chega a tempo, o bloqueio falha!`,'atk');continue}}
+      kept.push(b)}
+    if(kept.length&&kept.length<minBlockers(att)){log('Bloqueadores insuficientes para a Obstinação: o bloqueio falha.','atk');kept=[]}
+    blks=kept;render()}
   if(G.over)return;
   // janela de bloqueio: cartas que quebram a regra (Facho de Luz Solar)
   if(onField(att)&&!G.cancelAttack&&blks.length)await blockWindow(D,att,blks);
@@ -725,7 +814,10 @@ async function attack(att){
   await sba();checkOver();G.busy=false;render()}
 function logBlock(bs){if(bs.length)log(`🛡 ${bs.map(b=>b.d.name).join(' + ')} bloqueia${bs.length>1?'m':''}.`,'atk');return bs}
 function aiChooseBlockers(D,att){
-  const bl=D.field.filter(b=>canBlock(b,att));const need=minBlockers(att);if(bl.length<need)return[];
+  const all=D.field.filter(b=>canBlock(b,att)),inPos=all.filter(b=>!offPos(b));
+  if(inPos.length<all.length){const r=aiChooseFrom(D,att,inPos);if(r.length)return r}
+  return aiChooseFrom(D,att,all)}
+function aiChooseFrom(D,att,bl){const need=minBlockers(att);if(bl.length<need)return[];
   if(G.diff==='facil'){if(need===1){const safe=bl.filter(b=>atk(att)<def(b)-b.dmg);if(safe.length&&Math.random()<.6)return[safe[0]]}return atk(att)>=D.hp+D.prot?bl.slice(0,need):[]}
   const A=atk(att),Dl=def(att)-att.dmg,left=b=>def(b)-b.dmg;
   const incoming=A*(att.id==='espiritoFogo'?3:1);
@@ -749,7 +841,7 @@ async function defend(D,att){
     const pl=D.hand.find(x=>x.id==='planta'&&canPlay(D,x,win));
     if(pl&&val(att)>=4){removeFrom(D.hand,pl);log(`↯ ${D.name} usa Planta Carnívora!`,'atk');await destroy(att,{});toGrave(pl);gainXP(D,pl.d.xp);return[]}
     const da=D.hand.find(x=>x.id==='defesaAerea'&&canPlay(D,x,win));
-    if(da&&!D.field.some(b=>canBlock(b,att))&&atk(att)>=3){const h=D.field.filter(isHarpia).sort((a,b)=>(def(b)-b.dmg)-(def(a)-a.dmg))[0];if(h){await playCard(D,da,win);if(G.forcedBlock)return logBlock([G.forcedBlock])}}
+    if(da&&!D.field.some(b=>canBlock(b,att))&&atk(att)>=3){const h=D.field.filter(isHarpia).sort((a,b)=>(def(b)-b.dmg)-(def(a)-a.dmg))[0];if(h){await playCard(D,da,win);if(G.forcedBlock){G.forcedBlock.forcedT=G.turnNo;return logBlock([G.forcedBlock])}}}
     const bs=aiChooseBlockers(D,att);
     if(G.diff==='dificil'&&bs.length){const dying=bs.filter(b=>def(b)-b.dmg<=atk(att)).sort((a,b)=>val(b)-val(a))[0];
       if(dying){const pump=D.hand.find(x=>(x.id==='protecaoApolia'||(x.id==='furia'&&def(dying)-dying.dmg+2>atk(att)))&&canPlay(D,x,win));if(pump){G.aiFocus=dying;await playCard(D,pump,win);G.aiFocus=null}}}
@@ -757,7 +849,7 @@ async function defend(D,att){
   G.forcedBlock=null;
   while(true){
     if(!onField(att)||G.over||G.cancelAttack)return[];
-    if(G.forcedBlock&&onField(G.forcedBlock)){const f=G.forcedBlock;G.forcedBlock=null;return logBlock([f])}
+    if(G.forcedBlock&&onField(G.forcedBlock)){const f=G.forcedBlock;G.forcedBlock=null;f.forcedT=G.turnNo;return logBlock([f])}
     const bl=D.field.filter(b=>canBlock(b,att));
     const ins=D.hand.filter(x=>canPlay(D,x,win));
     const r=await asHuman(D,()=>askBlock(att,bl,ins,minBlockers(att)));
@@ -788,7 +880,7 @@ async function fight(att,blks){
   const trample=hasKw(att,'atropelar')?r:0;
   if(att.d.cont==='Atharvash')for(const b of blks)if(hasKw(b,'rescalor')&&toB.get(b)>0)toB.set(b,toB.get(b)-1);
   let toA=blks.reduce((s,b)=>s+Math.max(0,atk(b)-(hasKw(att,'rescalor')&&b.d.cont==='Atharvash'?1:0)),0);
-  for(const b of blks)if(b.id==='sereia'&&!b.noAbil&&toB.get(b)>0){const x=d6();log(`Sereia rola ${x}.`);if(x<=3){toB.set(b,0);log('Encantar: a Sereia não recebe dano.')}}
+  for(const b of blks)if(b.id==='sereia'&&!b.noAbil&&toB.get(b)>0){const x=await roll(6,'Sereia: Encantar (1–3 não recebe dano)');log(`Sereia rola ${x}.`);if(x<=3){toB.set(b,0);log('Encantar: a Sereia não recebe dano.')}}
   for(const b of blks)if(onField(b)&&b.dmg+toB.get(b)>=def(b)&&await camoWindow(P[b.ctrl],b)){toA-=atk(b);toB.set(b,0)}
   if(onField(att)&&att.dmg+toA>=def(att)&&await camoWindow(A,att)){for(const b of blks)toB.set(b,0);toA=0}
   const live=blks.filter(onField);
@@ -808,7 +900,7 @@ async function camoWindow(p,c){const x=p.hand.find(h=>h.id==='camuflagem'&&canPl
   toGrave(x);gainXP(p,x.d.xp);return true}
 async function onKill(k,v){if(k.noAbil)return;if(k.id==='aracne'&&onField(k)){k.mods.push({a:1,d:1});log('Aracne recebe +1/+1.')}if(k.id==='aranthor'){summonToken(P[k.ctrl],'tZumbi')}}
 async function directHit(att,D){let n=atk(att),times=1;
-  if(att.id==='espiritoFogo'&&!att.noAbil){times=d6();log(`Espírito de Fogo rola ${times}: ${times} ataque(s)!`)}
+  if(att.id==='espiritoFogo'&&!att.noAbil){times=await roll(6,'Espírito de Fogo: número de ataques');log(`Espírito de Fogo rola ${times}: ${times} ataque(s)!`)}
   damagePlayer(D,n*times,att,null,att.id==='gato'&&!att.noAbil);
   if(att.id==='cobra'&&!att.noAbil){D.dots.push({n:2,t:3,src:'Veneno'});log(`${D.name} está envenenado: perde 2 por 3 turnos.`,'dmg')}}
 async function animateAttack(att,blks,D){
@@ -936,7 +1028,7 @@ async function aiTurn(p){
 }
 
 /* ========================= HABILIDADES ATIVAS ======================= */
-function abilityOf(c){if(c.noAbil)return null;if(c.d.act)return c.d.act;if(c.equips&&c.equips.some(e=>e.id==='cajado'))return{label:'Cajado Solar: impedir um omnita de bloquear',can:(c,p)=>opp(p).field.length>0,run:async(c,p)=>{const t=await pickTarget(p,{title:'Cajado Solar: quem não poderá bloquear?',kind:'oppOmnita',destroy:true});if(t){t.noBlock=G.turnNo;log(`${t.d.name} não poderá bloquear neste turno.`)}},ai:p=>G.phase==='main1'&&opp(p).field.length?7:0};if(c.d.kw.includes('treinamento'))return{label:'Treinar (suspende 2 turnos, +2 XP)',can:(c)=>!c.atkUsed&&!c.suspended,run:async c=>{c.suspended=2;log(`${c.d.name} entra em treinamento.`)},ai:()=>0};return null}
+function abilityOf(c){if(c.noAbil)return null;if(c.d.act)return c.d.act;if(c.equips&&c.equips.some(e=>e.id==='cajado'))return{label:'Cajado Solar: impedir um omnita de bloquear',can:(c,p)=>opp(p).field.length>0,run:async(c,p)=>{const t=await pickTarget(p,{title:'Cajado Solar: quem não poderá bloquear?',kind:'oppOmnita',destroy:true});if(t){t.noBlock=G.turnNo;log(`${t.d.name} não poderá bloquear neste turno.`)}},ai:p=>G.phase==='main1'&&opp(p).field.length?7:0};return null}
 function canUseAbility(p,c){const a=abilityOf(c);if(!a||G.over)return false;if(G.active!==p.id||G.phase==='combat')return false;if(c.ctrl!==p.id)return false;if(c.usedTurn===G.turnNo)return false;if(c.d.type!=='totem'&&(c.frozen||isPrisoned(c)||c.suspended))return false;if(a.can&&!a.can(c,p))return false;return true}
 async function useAbility(p,c){const a=abilityOf(c);c.usedTurn=G.turnNo;log(`${p.name} usa ${c.d.name}: ${a.label}.`);G.effSrc=c;try{await a.run(c,p)}finally{G.effSrc=null}await sba();checkOver();render()}
 
@@ -951,8 +1043,8 @@ function eqLabel(e){if(e.d.type==='omnita')return`🐎 ${esc(e.d.name)} <b>+${at
   const b=(e.d.eqAtk||e.d.eqDef)?` <b>+${e.d.eqAtk||0}/+${e.d.eqDef||0}</b>`:'';const k=(e.d.eqKw||[]).map(x=>KW_LABEL[x]).filter(Boolean);return`🗡 ${esc(e.d.name)}${b}${k.length?' · '+k.join(', '):''}`}
 function unitHTML(c,o){return`<div class="unit">${cardHTML(c,o)}${(c.equips||[]).map(e=>`<div class="eq" data-uid="${e.uid}" title="${esc(e.d.name)}: ${esc(e.d.text)}">${eqLabel(e)}</div>`).join('')}</div>`}
 function fieldHTML(p,mine,myTurn){
-  const tot=p.totems.map(c=>{const ok=mine&&myTurn&&canUseAbility(p,c);return`<div class="tile c-${c.d.cont} ${ok?'clickable':''}" data-uid="${c.uid}" ${ok?'data-act="ability"':''} title="${esc(c.d.name)}: ${esc(c.d.text)}">${artImg(c.d)}<span>${esc(c.d.name)}</span>${c.usedTurn===G.turnNo&&abilityOf(c)?'<span class="u">✔️</span>':''}</div>`}).join('');
-  const units=p.field.map(c=>{let act='',cls='';if(mine&&myTurn&&canAttack(c)){act='attack';cls='canatk'}else if(mine&&myTurn&&canUseAbility(p,c)){act='ability';cls='clickable'}return unitHTML(c,{act,cls})}).join('');
+  const tot=p.totems.map(c=>{const ok=mine&&myTurn&&canUseAbility(p,c);return`<div class="tile c-${c.d.cont} ${ok?'clickable abil':''}" data-uid="${c.uid}" ${ok?'data-act="ability"':''} title="${esc(c.d.name)}: ${esc(c.d.text)}">${artImg(c.d)}<span>${esc(c.d.name)}</span>${c.usedTurn===G.turnNo&&abilityOf(c)?'<span class="u">✔️</span>':''}</div>`}).join('');
+  const units=p.field.map(c=>{let act='',cls='';if(mine&&myTurn&&canAttack(c)){act='attack';cls='canatk'}else if(mine&&myTurn&&canUseAbility(p,c)){act='ability';cls='clickable abil'}return unitHTML(c,{act,cls})}).join('');
   return`${tot?`<div class="tot"><span class="ttl">Totens</span>${tot}</div>`:''}<div class="units">${units||`<span class="muted">${mine&&!HOT()?'Seu campo está vazio':'Campo de '+esc(p.name)+' vazio'}</span>`}</div>`}
 function hintText(H,myTurn){
   if(G.over)return'';
@@ -969,7 +1061,7 @@ function statTxt(c){const d=c.d;if(onField(c)){const a=atk(c),df=def(c)-c.dmg;re
 function cardHTML(c,o={}){const d=c.d,isOm=d.type==='omnita'||d.type==='token';
   const cls=['card','c-'+(d.type==='token'?'x':d.cont),o.size||'',o.cls||''];
   if(onField(c)&&c.latency&&P[c.ctrl]&&G.active===c.ctrl)cls.push('latent');
-  let badges='';if(onField(c)){if(c.latency)badges+='<span title="Latência: baixado neste turno">💤</span>';if(c.frozen)badges+='<span title="Congelado">❄️</span>';if(isPrisoned(c))badges+='<span title="Preso">⛓️</span>';if(c.suspended)badges+=`<span title="Em treinamento">⏳</span>`;if(c.curled)badges+='<span title="Enrolado">🛡️</span>';if(c.noAbil)badges+='<span title="Sem habilidades">🚫</span>';if(c.noBlock===G.turnNo)badges+='<span title="Não pode bloquear">🚷</span>';if(c.blockedTurn===G.turnNo&&G.active!==c.ctrl)badges+='<span title="Já bloqueou neste turno">🛡️✔</span>';if(c.wait)badges+=`<span title="Espera ${c.wait} turno(s)">⌛</span>`;if(kws(c).has('runica'))badges+='<span title="Imune a Execuções">✨</span>';if(c.usedTurn===G.turnNo&&abilityOf(c))badges+='<span title="Habilidade usada">✔️</span>';if(readyToAttack(c))badges+='<span class="rdy" title="Pode atacar neste turno">⚔</span>'}
+  let badges='';if(onField(c)){if(c.latency)badges+='<span title="Latência: baixado neste turno">💤</span>';if(c.frozen)badges+='<span title="Congelado">❄️</span>';if(isPrisoned(c))badges+='<span title="Preso">⛓️</span>';if(c.suspended)badges+=`<span title="Em treinamento">⏳</span>`;if(c.curled)badges+='<span title="Enrolado">🛡️</span>';if(c.noAbil)badges+='<span title="Sem habilidades">🚫</span>';if(c.noBlock===G.turnNo)badges+='<span title="Não pode bloquear">🚷</span>';if(c.blockedTurn===G.turnNo&&G.active!==c.ctrl)badges+='<span title="Já bloqueou neste turno">🛡️✔</span>';if(offPos(c)||(c.attackedTurn===G.turnNo&&G.active===c.ctrl))badges+='<span title="Fora de posição: atacou no último turno. Se bloquear no turno do oponente, rola 1d6: 1–3 bloqueia, 4–6 falha.">🎲</span>';if(c.wait)badges+=`<span title="Espera ${c.wait} turno(s)">⌛</span>`;if(kws(c).has('runica'))badges+='<span title="Imune a Execuções">✨</span>';if(c.usedTurn===G.turnNo&&abilityOf(c))badges+='<span title="Habilidade usada">✔️</span>';if(readyToAttack(c))badges+='<span class="rdy" title="Pode atacar neste turno">⚔</span>'}
   const st=isOm?statTxt(c):null;const k=[...(onField(c)?kws(c):new Set(d.kw))].map(x=>KW_LABEL[x]).join(' · ');
   const eqs='';
   return `<div class="${cls.join(' ')}" data-uid="${c.uid}" ${o.act?`data-act="${o.act}"`:''}>
@@ -992,9 +1084,9 @@ function pileHot(p,z){if(!G||G.over||p.id!==VIEW||p.isAI||G.active!==p.id)return
   if(z==='grave')return (p.grave.some(x=>x.id==='estatuaViva')&&p.xp>=2&&G.phase!=='combat')||p.hand.some(h=>['paleo','construindo','malNecessario'].includes(h.id)&&canPlay(p,h)&&(h.id!=='construindo'||p.grave.some(x=>x.d.type==='totem')));
   return p.hand.some(h=>h.id==='encarar'&&canPlay(p,h))}
 function pbarHTML(p){const L=level(p),nx=nextLevelXP(p.xp),cur=curLevelXP(p.xp);const pct=nx?Math.round((p.xp-cur)/(nx-cur)*100):100;
-  const chips=[];p.dots.forEach(d=>chips.push(`<span class="chip bad" title="Perde ${d.n} de vida no início de cada turno seu, por mais ${d.t} turno(s)">🔥 ${esc(d.src)}: −${d.n} de vida por turno (faltam ${d.t})</span>`));p.hots.forEach(h=>chips.push(`<span class="chip good" title="Recupera ${h.n} de vida no início de cada turno seu, por mais ${h.t} turno(s)">💧 ${esc(h.src||'Cura')}: +${h.n} de vida por turno (faltam ${h.t})</span>`));p.delayed.forEach(d=>chips.push(`<span class="chip">⏳ ${esc(d.label)} (${d.t})</span>`));if(p.noSummon)chips.push('<span class="chip bad">Sem invocações</span>');if(p.lvlBonus)chips.push('<span class="chip good">Bênção +1 nível</span>');
-  return `<span class="nm">${esc(p.name)}<small>${p.deckName}</small></span><span class="hp" title="Pontos de vida">❤ ${p.hp}</span><span class="hpbar ${p.prot?'wide':''}" title="${p.hp} de vida${p.prot?' + '+p.prot+' de Proteção (absorve o dano primeiro)':''}"><i style="width:${Math.max(0,p.hp)/Math.max(RULES.startHP,p.hp+p.prot)*100}%"></i>${p.prot?`<b style="width:${p.prot/Math.max(RULES.startHP,p.hp+p.prot)*100}%"></b>`:''}</span>${p.prot?(syncProt(p),`<span class="chip" style="color:#cfe6ff;border-color:#4d7aa8" title="Proteção: absorve dano antes da vida. ${p.protQ.map(q=>q.n+' some '+(q.t<=1?'no próximo turno':'em '+q.t+' turnos')).join(' · ')}">🛡 ${p.prot}${(()=>{const s=p.protQ.filter(q=>q.t<=1).reduce((a,q)=>a+q.n,0);return s?` <small style="opacity:.75">(−${s} no próximo turno)</small>`:''})()}</span>`):''}<span class="lvl lc${Math.min(9,L)}" title="Nível">Nv ${L}</span><span title="Experiência">${p.xp} XP${nx?' / '+nx:''}</span><span class="xpbar lc${Math.min(9,L)}"><i style="width:${pct}%"></i></span>
-   <span class="pile" title="Baralho">🂠 ${p.deck.length}</span><span class="pile ${pileHot(p,'grave')?'hot':''}" data-pile="grave-${p.id}" ${pileHot(p,'grave')?'title="Há uma ação possível aqui"':''}>🪦 Cemitério ${p.grave.length}</span><span class="pile ${pileHot(p,'void')?'hot':''}" data-pile="void-${p.id}" ${pileHot(p,'void')?'title="Há uma ação possível aqui"':''}>🌀 Vazio ${p.void.length}</span>${p.id!==VIEW?`<span class="pile" title="Cartas na mão">✋ ${p.hand.length}</span>`:''}${chips.join('')}`}
+  const chips=[];p.dots.forEach(d=>chips.push(`<span class="chip bad" title="Perde ${d.n} de vida no início de cada turno seu, por mais ${d.t} turno(s)">🔥 ${esc(d.src)}: −${d.n} de vida por turno (faltam ${d.t})</span>`));p.hots.forEach(h=>chips.push(`<span class="chip good" title="Recupera ${h.n} de vida no início de cada turno seu, por mais ${h.t} turno(s)">💧 ${esc(h.src||'Cura')}: +${h.n} de vida por turno (faltam ${h.t})</span>`));p.delayed.forEach(d=>chips.push(`<span class="chip ${d.susp?'susp':''}" ${d.uid?`data-uid="${d.uid}"`:''} title="${d.susp?'Carta suspensa, revelada':'Efeito em espera'}: entra em ${d.t} turno(s)">⏳ ${esc(d.label)} (${d.t})</span>`));if(p.noSummon)chips.push('<span class="chip bad">Sem invocações</span>');if(p.lvlBonus)chips.push('<span class="chip good">Bênção +1 nível</span>');
+  return `<div class="pb-stats"><span class="nm">${esc(p.name)}<small>${p.deckName}</small></span><span class="hp" title="Pontos de vida">❤ ${p.hp}</span><span class="hpbar ${p.prot?'wide':''}" title="${p.hp} de vida${p.prot?' + '+p.prot+' de Proteção (absorve o dano primeiro)':''}"><i style="width:${Math.max(0,p.hp)/Math.max(RULES.startHP,p.hp+p.prot)*100}%"></i>${p.prot?`<b style="width:${p.prot/Math.max(RULES.startHP,p.hp+p.prot)*100}%"></b>`:''}</span>${p.prot?(syncProt(p),`<span class="chip" style="color:#cfe6ff;border-color:#4d7aa8" title="Proteção: absorve dano antes da vida. ${p.protQ.map(q=>q.n+' some '+(q.t<=1?'no próximo turno':'em '+q.t+' turnos')).join(' · ')}">🛡 ${p.prot}${(()=>{const s=p.protQ.filter(q=>q.t<=1).reduce((a,q)=>a+q.n,0);return s?` <small style="opacity:.75">(−${s} no próximo turno)</small>`:''})()}</span>`):''}<span class="lvl lc${Math.min(9,L)}" title="Nível">Nv ${L}</span><span title="Experiência">${p.xp} XP${nx?' / '+nx:''}</span><span class="xpbar lc${Math.min(9,L)}"><i style="width:${pct}%"></i></span></div>
+   <div class="pb-piles"><span class="pile" title="Baralho: ${p.deck.length} cartas">🂠 ${p.deck.length}</span><span class="pile ${pileHot(p,'grave')?'hot':''}" data-pile="grave-${p.id}" title="Cemitério${pileHot(p,'grave')?' (há uma ação possível aqui)':''}">🪦 ${p.grave.length}</span><span class="pile ${pileHot(p,'void')?'hot':''}" data-pile="void-${p.id}" title="Vazio${pileHot(p,'void')?' (há uma ação possível aqui)':''}">🌀 ${p.void.length}</span>${p.id!==VIEW?`<span class="pile" title="Cartas na mão">✋ ${p.hand.length}</span>`:''}${chips.join('')}</div>`}
 function render(){
   if(!G)return;const H=P[VIEW],A=P[1-VIEW];const myTurn=G.active===VIEW&&!G.busy&&!G.over&&!H.isAI;
   $('#oppbar').innerHTML=pbarHTML(A);$('#mybar').innerHTML=pbarHTML(H);
@@ -1006,21 +1098,23 @@ function render(){
   const NOMEF={main1:'Fase Inicial',combat:'Combate',main2:'Fase Final'};
   const L=level(H);const meu=G.active===VIEW;
   const quem=G.over?'Fim de jogo':HOT()?esc(P[G.active].name):meu?'Seu turno':'Turno do oponente';
-  const acts=`<span class="acts">
-   <span class="phasebox" title="">
-     <button class="phasebtn ${meu?'':'off'}" data-act="phasepop">${quem} · ${NOMEF[G.phase]||''} ▾</button>
-     <span class="phasepop"><b>Ordem do turno</b><ol>${ph.map(([k,l])=>`<li class="${G.phase===k?'on':''}">${l}</li>`).join('')}</ol></span>
-   </span>
-   ${meu?`<span class="chip" title="Soma dos níveis de omnitas baixados neste turno / seu nível">Invocação ${H.sumUsed}/${L}</span><span class="chip" title="Só 1 carta de Conhecimento por turno">📘 ${H.knowUsed?'usado':'disponível'}</span>`:''}
-   ${G.phase==='main1'&&myTurn?`<button class="btn" data-act="combat">⚔ Combate</button>`:''}
-   ${G.phase==='combat'&&myTurn&&H.field.some(canAttack)?`<button class="btn danger" data-act="attackall">⚔ Atacar com todos (${H.field.filter(canAttack).length})</button>`:''}
-   ${G.phase==='combat'&&myTurn?`<button class="btn" data-act="main2">Fase Final →</button>`:''}
-   <button class="btn primary" data-act="end" ${myTurn?'':'disabled'}>Encerrar turno</button>
-   <button class="btn" data-act="rules" title="Como jogar">?</button>
-   ${hintText(H,myTurn)?`<span class="hint2">💡 ${hintText(H,myTurn)}</span>`:''}
-  </span>`;
-  $('#mybar').innerHTML=pbarHTML(H)+acts;
+  const hint=hintText(H,myTurn);
+  const meio=`<div class="pb-mid"><div class="pb-turn">
+     <span class="phasebox">
+       <button class="phasebtn ${meu?'':'off'}" data-act="phasepop">${quem} · ${NOMEF[G.phase]||''} ▾</button>
+       <span class="phasepop"><b>Ordem do turno</b><ol>${ph.map(([k,l])=>`<li class="${G.phase===k?'on':''}">${l}</li>`).join('')}</ol></span>
+     </span>
+     ${meu?`<span class="chip" title="Invocação: soma dos níveis de omnitas baixados neste turno / seu nível"><span class="lg">Invocação </span><span class="sh">✦ </span>${H.sumUsed}/${L}</span><span class="chip" title="Conhecimento: só 1 por turno">📘 <span class="lg">${H.knowUsed?'usado':'disponível'}</span><span class="sh">${H.knowUsed?'✗':'✓'}</span></span>`:''}
+    </div>${hint?`<div class="hint2">💡 ${hint}</div>`:''}</div>`;
+  const botoes=`<div class="pb-right">
+     ${G.phase==='main1'&&myTurn?`<button class="btn" data-act="combat" title="Ir para o Combate">⚔<span class="lg"> Combate</span></button>`:''}
+     ${G.phase==='combat'&&myTurn&&H.field.some(canAttack)?`<button class="btn danger" data-act="attackall" title="Atacar com todos">⚔⚔<span class="lg"> Atacar com todos</span> (${H.field.filter(canAttack).length})</button>`:''}
+     ${G.phase==='combat'&&myTurn?`<button class="btn" data-act="main2" title="Ir para a Fase Final"><span class="lg">Fase Final </span>→</button>`:''}
+     <button class="btn primary" data-act="end" title="Encerrar turno" ${myTurn?'':'disabled'}>Encerrar<span class="lg"> turno</span></button>
+     <button class="btn" data-act="rules" title="Como jogar">?</button></div>`;
+  $('#mybar').innerHTML=`<div class="pb-left">${pbarHTML(H)}</div>${meio}${botoes}`;
   $('#mid').innerHTML='';
+  anim3d();
 }
 
 /* ============================== MODAIS ============================== */
@@ -1036,12 +1130,12 @@ function ask(title,options,o={}){return new Promise(res=>{
 function askBlock(att,bl,ins,need){return new Promise(res=>{
   const sel=new Set();const m=document.createElement('div');m.className='modal-bg';
   const k=kws(att);
-  const txt=(k.has('voar')?'Voar: só omnitas com Voar ou Alcance podem bloquear. ':'')+(k.has('imbloqueavel')?'Este ataque não pode ser bloqueado. ':'')+(need>1?'Obstinação: precisa de 2 ou mais bloqueadores. ':'')+'Selecione um ou mais bloqueadores (o atacante divide o dano entre eles), use uma Execução Instantânea, ou receba o dano.';
+  const txt=(k.has('voar')?'Voar: só omnitas com Voar ou Alcance podem bloquear. ':'')+(k.has('imbloqueavel')?'Este ataque não pode ser bloqueado. ':'')+(need>1?'Obstinação: precisa de 2 ou mais bloqueadores. ':'')+(bl.some(offPos)?'🎲 Omnitas fora de posição (atacaram no último turno) rolam 1d6 ao bloquear: 1–3 bloqueiam, 4–6 falham. ':'')+'Selecione um ou mais bloqueadores (o atacante divide o dano entre eles), use uma Execução Instantânea, ou receba o dano.';
   m.innerHTML=`<div class="modal"><h3>${esc(att.d.name)} (${atk(att)}/${def(att)-att.dmg}) está atacando!</h3><p>${esc(txt)}</p><div style="display:flex;justify-content:center;margin-bottom:6px">${cardHTML(att)}</div>
    ${bl.length?'<div class="lbl">Seus bloqueadores</div><div class="opts bl"></div>':''}${ins.length?'<div class="lbl">Execuções Instantâneas</div><div class="opts ins"></div>':''}
    <p><button class="btn primary okb">Bloquear</button> <button class="btn none">Não bloquear (receber ${atk(att)}${att.id==='espiritoFogo'?' × d6':''})</button></p></div>`;
   const okb=m.querySelector('.okb');const upd=()=>{okb.disabled=sel.size<need;okb.textContent=sel.size?`Bloquear com ${sel.size}`:'Bloquear'};
-  for(const b of bl){const el=document.createElement('div');el.className='opt-card';el.innerHTML=cardHTML(b);el.onclick=()=>{if(sel.has(b)){sel.delete(b);el.classList.remove('sel')}else{sel.add(b);el.classList.add('sel')}upd()};m.querySelector('.bl').appendChild(el)}
+  for(const b of bl){const el=document.createElement('div');el.className='opt-card';el.innerHTML=cardHTML(b)+(offPos(b)?'<div class="optlbl">🎲 fora de posição</div>':'');el.onclick=()=>{if(sel.has(b)){sel.delete(b);el.classList.remove('sel')}else{sel.add(b);el.classList.add('sel')}upd()};m.querySelector('.bl').appendChild(el)}
   for(const x of ins){const el=document.createElement('div');el.className='opt-card';el.innerHTML=cardHTML(x)+'<div class="optlbl">Usar</div>';el.onclick=()=>{m.remove();res({x})};m.querySelector('.ins').appendChild(el)}
   okb.onclick=()=>{m.remove();res({blockers:[...sel]})};m.querySelector('.none').onclick=()=>{m.remove();res({none:1})};upd();document.body.appendChild(m)})}
 const SETTINGS=(()=>{let o={};try{o=JSON.parse(localStorage.getItem('omni_settings')||'{}')||{}}catch(e){}return o})();
@@ -1078,6 +1172,8 @@ const RULES_HTML=`<ul>
 <li><b>Latência:</b> omnitas recém-baixados só atacam no próximo turno.</li>
 <li><b>Combate:</b> você declara um atacante; o oponente escolhe bloquear ou receber o dano direto. Vários omnitas podem bloquear o mesmo atacante; ele divide o dano entre eles. Cada omnita só pode bloquear um ataque por turno. O dano que sobra não passa para o jogador. Cada omnita ataca uma vez por turno (Golpe Duplo: duas).</li>
 <li><b>Voar:</b> só pode ser bloqueado por Voar ou Alcance.</li>
+<li><b>Suspender N</b> ⏳: ao jogar a carta, escolha baixá-la normal ou suspensa. Suspensa, ela fica revelada ao oponente e entra em jogo depois de N turnos seus, com o efeito extra indicado.</li>
+<li><b>Fora de Posição</b> 🎲: um omnita que atacou no seu último turno está longe da defesa. Se ele bloquear no turno do oponente, jogue 1d6: 1–3 ele chega a tempo e bloqueia; 4–6 o bloqueio falha e o ataque segue (para os outros bloqueadores ou direto no jogador).</li>
 <li><b>Proteção:</b> absorve o dano antes da vida. Cada Proteção ganha dura ${RULES.protTurns} turnos seus: no início do seu 2º turno depois de recebê-la, o que sobrou dela some. O dano gasta primeiro a Proteção mais antiga.</li>
 <li><b>Ciclo dos continentes</b> (🔴 Atharvash vence 🟢 Gaia, que vence 🟡 Apólia, que vence 🔵 Kurai, que vence 🔴 Atharvash):
  <br>🔥 <b>Fogo</b>: o dano de Execuções de queimar ignora a Proteção, e voadores recebem +1.
@@ -1087,10 +1183,21 @@ const RULES_HTML=`<ul>
  <br>❄ <b>Resistência ao Calor</b> (habilidade de alguns omnitas do Kurai): recebem 1 a menos de dano de fogo e de omnitas do Atharvash.</li>
 <li><b>Execuções Instantâneas</b> podem ser usadas no seu turno ou em resposta ao oponente (quando ele joga uma carta ou ataca). <b>Execuções Regulares</b> só nas fases Inicial/Final do seu turno.</li>
 <li>Clique numa carta brilhante da mão para jogá-la; no combate, clique num omnita com brilho vermelho para atacar. Omnitas/totens com habilidade ficam clicáveis.</li></ul>`;
-function showRules(){const m=document.createElement('div');m.className='modal-bg';m.innerHTML=`<div class="modal"><h3>Como jogar</h3><div class="rules">${RULES_HTML}</div><p></p><button class="btn primary">Fechar</button></div>`;m.querySelector('button').onclick=()=>m.remove();document.body.appendChild(m)}
+const opt3dHTML=()=>`<label class="opt3d-l"><input type="checkbox" class="opt3d" ${SETTINGS.no3d?'':'checked'}> 🎲 Dados e moeda em 3D</label>`;
+document.addEventListener('change',e=>{if(e.target.classList&&e.target.classList.contains('opt3d')){SETTINGS.no3d=!e.target.checked;saveSettings();document.querySelectorAll('.opt3d').forEach(x=>x.checked=!SETTINGS.no3d)}});
+function showRules(){const m=document.createElement('div');m.className='modal-bg';m.innerHTML=`<div class="modal"><h3>Como jogar</h3><div class="rules">${RULES_HTML}</div><p>${opt3dHTML()}</p><button class="btn primary">Fechar</button></div>`;m.querySelector('button').onclick=()=>m.remove();document.body.appendChild(m)}
 function gameOver(winner){const m=document.createElement('div');m.className='modal-bg';const hot=HOT();const win=winner&&!winner.isAI;const title=winner===null?'Empate!':hot?`${winner.name} venceu!`:win?'Vitória!':'Derrota';m.innerHTML=`<div class="modal" style="text-align:center"><h3 style="font-size:28px">${title}</h3><p>${hot||win?'Boa aventura, Omnita!':'Os omnitas do oponente prevaleceram.'}</p><button class="btn primary">Jogar novamente</button></div>`;m.querySelector('button').onclick=()=>{m.remove();showStart()};document.body.appendChild(m);render()}
 
 /* =========================== EVENTOS DA UI ========================== */
+let TILT=null;
+function untilt(){if(TILT){TILT.style.rotate='';TILT.classList.remove('tilt');TILT=null}}
+document.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const el=e.target.closest&&e.target.closest('.card:not(.back)');
+  if(el!==TILT)untilt();if(!el||el.closest('.modal,.dice3d'))return;const r=el.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+  el.style.rotate=`${-y} ${x} 0 ${Math.min(18,Math.hypot(x,y)*36)}deg`;el.style.setProperty('--gx',(x+.5)*100+'%');el.style.setProperty('--gy',(y+.5)*100+'%');el.classList.add('tilt');TILT=el});
+document.addEventListener('pointerleave',untilt);
+const SEEN3D=new Set();let FIRST3D=true;
+function anim3d(){if(AUTO)return;document.querySelectorAll('#board .row .card[data-uid], #myhand .card[data-uid]').forEach(el=>{const u=el.dataset.uid;if(SEEN3D.has(u))return;SEEN3D.add(u);if(!FIRST3D)el.classList.add('enter3d')});FIRST3D=false}
+
 document.addEventListener('mouseover',e=>{const el=e.target.closest('[data-uid]');if(!el)return;const u=el.dataset.uid;const c=u.startsWith('def-')?fakeCard(u.slice(4)):INST.get(+u);if(c){const pv=$('#preview');pv.innerHTML=bigHTML(c);const ep=document.querySelector('.ed-preview');if(ep)ep.innerHTML=bigHTML(c)}});
 document.addEventListener('click',async e=>{
   const pile=e.target.closest('[data-pile]');if(pile){const[z,i]=pile.dataset.pile.split('-');showPile(P[+i],z);return}
@@ -1126,7 +1233,7 @@ function showStart(){
     ${hot?'':`<div class="lbl">Dificuldade</div>${seg('diff',[['facil','Fácil'],['normal','Normal'],['dificil','Difícil']])}`}
     <div class="lbl">${hot?'Baralho do Jogador 1':'Seu baralho'}</div><div class="decks">${deckBtns(UI.d1,'d1',false)}</div>
     <div class="lbl">${hot?'Baralho do Jogador 2':'Baralho do oponente (computador)'}</div><div class="decks">${deckBtns(UI.d2,'d2',!hot)}</div>
-    <p style="margin-top:18px"><button class="btn primary" id="go" style="font-size:17px;padding:10px 28px">Jogar</button> <button class="btn" id="ed">Editor de baralhos</button></p>
+    <p style="margin-top:18px"><button class="btn primary" id="go" style="font-size:17px;padding:10px 28px">Jogar</button> <button class="btn" id="ed">Editor de baralhos</button></p><p>${opt3dHTML()}</p>
     <p class="muted" id="warn"></p>
     <details class="rules"><summary><b>Como jogar</b></summary>${RULES_HTML}</details></div>`;
     st.querySelectorAll('[data-d1]').forEach(el=>el.onclick=()=>{UI.d1=el.dataset.d1;draw_()});
