@@ -88,11 +88,23 @@ button{font:inherit}
 .card .badges,.card .eqs{z-index:2}
 .card .badges span{text-shadow:0 1px 3px #000}
 .card .cat{font-size:10.5px;color:#eadfce;text-shadow:0 1px 2px #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card .kw{font-size:10px;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:11px}
+.card .kw{display:none}
+.card .kics{position:absolute;left:4px;top:36px;z-index:2;display:flex;flex-direction:column;gap:3px}
+.kic{display:grid;place-items:center;width:23px;height:23px;border-radius:50%;background:#120d0acc;border:1.5px solid var(--cc);font-size:13px;line-height:1;box-shadow:0 1px 4px #000c;cursor:help}
+.card.sm .kic{width:19px;height:19px;font-size:11px}
+.kic.k-voar{border-color:#e8eef5;box-shadow:0 0 6px #e8eef566,0 1px 4px #000c}.kic.k-alcance{border-color:#9fd36b;box-shadow:0 0 6px #9fd36b66,0 1px 4px #000c}.kic.k-agil{border-color:#ffd34d;box-shadow:0 0 6px #ffd34d66,0 1px 4px #000c}.kic.k-golpe{border-color:#ff9d5c;box-shadow:0 0 6px #ff9d5c66,0 1px 4px #000c}.kic.k-atropelar{border-color:#8fbf5a;box-shadow:0 0 6px #8fbf5a66,0 1px 4px #000c}.kic.k-consumir{border-color:#b07ce5;box-shadow:0 0 6px #b07ce566,0 1px 4px #000c}.kic.k-montaria{border-color:#c9a27a;box-shadow:0 0 6px #c9a27a66,0 1px 4px #000c}.kic.k-treinamento{border-color:#e0ad48;box-shadow:0 0 6px #e0ad4866,0 1px 4px #000c}.kic.k-obstinacao{border-color:#b9a68f;box-shadow:0 0 6px #b9a68f66,0 1px 4px #000c}.kic.k-imbloqueavel{border-color:#b8c4ff;box-shadow:0 0 6px #b8c4ff66,0 1px 4px #000c}.kic.k-queimadura{border-color:#ff5a36;box-shadow:0 0 6px #ff5a3666,0 1px 4px #000c}.kic.k-rescalor{border-color:#7fd8ff;box-shadow:0 0 6px #7fd8ff66,0 1px 4px #000c}.kic.k-runica{border-color:#6fc3a0;box-shadow:0 0 6px #6fc3a066,0 1px 4px #000c}
+.kwrows{display:flex;flex-direction:column;gap:5px;margin-bottom:7px}
+.kwr{display:grid;grid-template-columns:24px 1fr;gap:7px;align-items:start;font-size:12px;line-height:1.3;text-shadow:0 1px 2px #000}
+.kwr .kic{width:24px;height:24px}
+.kwr b{color:var(--gold)}
+.kwr span.d{color:#e6dccd}
+.big .rules{font-size:12.5px;line-height:1.4;padding-top:6px;border-top:1px solid #ffffff22;text-shadow:0 1px 2px #000;white-space:pre-line}
+.big .flav{font-size:11.5px;font-style:italic;color:var(--muted);margin-top:6px}
+.big .stat{font-size:11.5px;color:#cfe6ff;margin-top:6px;white-space:pre-line}
 .card .st{position:absolute;bottom:4px;right:4px;background:#111;border:1.5px solid var(--text);border-radius:10px;padding:1px 7px;font-weight:800;font-size:12.5px}
 .card .st.hurt{border-color:var(--red);color:#ffb3a3}
 .card .st.buff{border-color:var(--ok);color:#b9f0c9}
-.card .badges{position:absolute;top:42px;left:3px;right:3px;z-index:2;display:flex;gap:2px;flex-wrap:wrap;font-size:13px}
+.card .badges{position:absolute;top:42px;left:31px;right:3px;z-index:2;display:flex;gap:2px;flex-wrap:wrap;font-size:13px}
 .card .lv,.card .xpb,.card .st,.card .tp{z-index:3}
 .card .eqs{position:absolute;bottom:2px;left:2px;display:flex;flex-direction:column;gap:1px}
 .card .eqs span{font-size:8px;background:#000b;border-radius:4px;padding:0 3px;max-width:70px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
@@ -303,7 +315,7 @@ function O(id,name,cont,cat,xp,lvl,atk,def,text,o={}){DEF[id]={id,name,cont,type
 function S(id,name,cont,type,xp,lvl,text,o={}){DEF[id]={id,name,cont,type,xp,lvl,text,kw:[],...o}}
 function T(id,name,cont,cat,atk,def,o={}){DEF[id]={id,name,cont,type:'token',cat,xp:0,lvl:0,atk,def,text:'Ficha.',kw:[],...o}}
 const TYPE_LABEL={omnita:'Omnita',token:'Ficha',equip:'Equipamento',totem:'Totem',knowledge:'Conhecimento',instant:'Execução Instantânea',regular:'Execução Regular'};
-const KW_LABEL={obstinacao:'Obstinação',agil:'Sem Latência',atropelar:'Atropelar',voar:'Voar',alcance:'Alcance',golpe:'Golpe Duplo',consumir:'Consumir',montaria:'Montaria',treinamento:'Suspender',imbloqueavel:'Imbloqueável',queimadura:'Queimadura',rescalor:'Resistência ao Calor',runica:'Proteção Rúnica'};
+const KW_LABEL={obstinacao:'Obstinação',agil:'Ataque Rápido',atropelar:'Atropelar',voar:'Voar',alcance:'Alcance',golpe:'Golpe Duplo',consumir:'Consumir',montaria:'Montaria',treinamento:'Suspender',imbloqueavel:'Imbloqueável',queimadura:'Queimadura',rescalor:'Resistência ao Calor',runica:'Proteção Rúnica'};
 const ANIMAL=['Ave','Mamífero','Réptil','Felino','Anfíbio','Sapo','Peixe','Elefante','Cobra','Aranha','Molusco','Urso','Pangolim','Inseto','Fera'];
 const isAnimal=d=>(d.type==='omnita'||d.type==='token')&&ANIMAL.some(a=>d.cat.includes(a));
 const isHumanoid=c=>/Humano|Humanoide/.test(c.d.cat);
@@ -466,7 +478,7 @@ O('cavaloGuerra','Cavalo de Guerra de Apólia',AP,'Mamífero Cavalo',2,3,3,2,'Mo
 O('magoA','Mago de Apólia',AP,'Humano Mago',2,2,2,2,'Ao entrar, escolha uma carta sua: ela fica imune a Execuções Instantâneas e Regulares enquanto o Mago estiver em campo.',{prot:2,enter:async(c,p)=>{const t=await pickTarget(p,{title:'Mago de Apólia: proteja um omnita seu',kind:'myOmnita',filter:x=>x!==c,optional:true});if(t){t.shieldBy=c.uid;log(`${t.d.name} fica imune a Execuções.`)}}});
 O('cavaleiroAlado','Cavaleiro Alado de Apólia',AP,'Humano Ave',2,2,2,3,'Voar.',{kw:['voar'],prot:4});
 O('sultao','Sultão Apoliano',AP,'Humano',2,1,1,3,'Voar.',{kw:['voar'],prot:3});
-O('leao','Leão do Sultão',AP,'Mamífero Felino',3,3,3,3,'Montaria. (No PDF esta carta também se chama "Sultão Apoliano".)',{kw:['montaria'],prot:2});
+O('leao','Leão do Sultão',AP,'Mamífero Felino',3,3,3,3,'Montaria.',{kw:['montaria'],prot:2});
 O('esfinge','Esfinge de Apólia',AP,'Besta Mística Alada',4,6,6,5,'Voar.',{kw:['voar'],prot:5});
 O('arqueiroSerp','Arqueiro Serpente de Apólia',AP,'Humanoide Cobra Arqueiro',2,1,1,1,'Esta carta não precisa esperar a Latência.',{kw:['agil'],prot:3});
 O('gato','Gato Alado do Deserto Apoliano',AP,'Besta Mística Alada',2,1,1,1,'Voar. Ataca diretamente os pontos de vida do oponente (ignora a Proteção).',{kw:['voar'],prot:2});
@@ -507,10 +519,32 @@ S('circuitos','Circuitos',AP,'knowledge',3,1,'Receba 3 de experiência. Esta car
 S('geodo','Omni Geodo','x','instant','?',1,'Complete a experiência que falta para subir um nível.',{flavor:'Um geodo encontrado, uma vez a cada milênio.',xpGeodo:true,play:async p=>{const nx=nextLevelXP(p.xp);if(nx)gainXP(p,nx-p.xp,'Omni Geodo')},ai:p=>{const nx=nextLevelXP(p.xp);return nx&&nx-p.xp>=4?40:0}});
 
 /* ------------- habilidades: Queimadura (Atharvash) e Resistência ao Calor (Kurai) ------------- */
-for(const id of ['falcao','fada','salamandra','mestreChamas','espiritoFogo','fenix']){DEF[id].kw=[...DEF[id].kw,'queimadura'];DEF[id].text='Queimadura: quando causa dano ao oponente, ele não recupera vida até o fim do próximo turno dele. '+DEF[id].text}
-for(const id of ['iceGolem','yeti','espiritoGelo','dragaoGelo','pangolim','tigre','monge','mongeAdepto','mongeMestre','lutadorAsuriano','panda','pescador','trollin','asura']){DEF[id].kw=[...DEF[id].kw,'rescalor'];DEF[id].text='Resistência ao Calor: recebe 1 a menos de dano de fogo e de omnitas de Atharvash. '+DEF[id].text}
+for(const id of ['falcao','fada','salamandra','mestreChamas','espiritoFogo','fenix']){DEF[id].kw=[...DEF[id].kw,'queimadura']}
+for(const id of ['iceGolem','yeti','espiritoGelo','dragaoGelo','pangolim','tigre','monge','mongeAdepto','mongeMestre','lutadorAsuriano','panda','pescador','trollin','asura']){DEF[id].kw=[...DEF[id].kw,'rescalor']}
 
-for(const id of ['falcao','arqueiroK','drakara','mestreChamas']){DEF[id].kw=[...DEF[id].kw,'agil'];DEF[id].text='Ataque Rápido: pode atacar no turno em que entra. '+DEF[id].text}
+for(const id of ['falcao','arqueiroK','drakara','mestreChamas']){DEF[id].kw=[...DEF[id].kw,'agil']}
+
+const KW_INFO={
+  voar:['🪶','Voar','Só pode ser bloqueado por omnitas com Voar ou Alcance.'],
+  alcance:['🏹','Alcance','Pode bloquear omnitas com Voar.'],
+  agil:['⚡','Ataque Rápido','Pode atacar no turno em que entra.'],
+  golpe:['🔁','Golpe Duplo','Pode atacar duas vezes por turno.'],
+  atropelar:['🦏','Atropelar','O dano que sobra do combate vai para o oponente (o de Gaia atravessa a Proteção).'],
+  consumir:['🌀','Consumir','Quando é destruído, destrói também a carta que o destruiu.'],
+  montaria:['🐎','Montaria','Pode ser equipado em um humano/humanoide, somando ataque e defesa.'],
+  treinamento:['⏳','Suspender','Pode ser baixado suspenso, revelado ao oponente; entra depois com um bônus.'],
+  obstinacao:['🧱','Obstinação','Só pode ser bloqueado por 2 ou mais omnitas.'],
+  imbloqueavel:['👻','Imbloqueável','Não pode ser bloqueado.'],
+  queimadura:['🔥','Queimadura','Quem recebe dano dele não recupera vida até o fim do próximo turno.'],
+  rescalor:['🧊','Resistência ao Calor','Recebe 1 a menos de dano de fogo e de omnitas de Atharvash.'],
+  runica:['🔰','Proteção Rúnica','Imune a Execuções Instantâneas.'],
+};
+const KW_STRIP={voar:['Voar'],alcance:['Alcance'],agil:['Ataque Rápido','Sem Latência','Esta carta não precisa esperar a Latência','Não precisa esperar a Latência'],golpe:['Golpe Duplo'],atropelar:['Atropelar'],consumir:['Consumir'],montaria:['Montaria'],treinamento:['Suspender \\d+','Treinamento'],obstinacao:['Obstinação'],imbloqueavel:['Imbloqueável']};
+function kwName(k,d){const i=KW_INFO[k];if(!i)return KW_LABEL[k]||k;return k==='treinamento'&&d&&d.susp?`Suspender ${d.susp.t}`:i[1]}
+function kwDesc(k,d){const i=KW_INFO[k];if(!i)return'';return k==='treinamento'&&d&&d.susp?`Pode ser baixado suspenso por ${d.susp.t} turnos, revelado ao oponente. Ao entrar: ${d.susp.txt}.`:i[2]}
+for(const d of Object.values(DEF)){let t=d.text||'';
+  for(const k of d.kw||[])for(const nm of KW_STRIP[k]||[]){const re=new RegExp('(^|[.,]\\s+)'+nm+'(\\s*\\([^)]*\\))?(:[^.]*)?[.,](\\s+|$)','g');t=t.replace(re,(m,a)=>a?a.replace(/,\s+$/,'. ').replace(/\.\s+$/,'. '):'')}
+  t=t.replace(/^[\s.,]+/,'').replace(/\s+\./g,'.').trim();if(t==='Ficha.'&&d.type!=='token')t='';d.rules=t}
 
 /* ------------------------------ FICHAS ----------------------------- */
 T('tDjin','Djin','Apólia','Espírito Djin',1,1,{kw:['voar']});
@@ -1062,7 +1096,7 @@ function cardHTML(c,o={}){const d=c.d,isOm=d.type==='omnita'||d.type==='token';
   const cls=['card','c-'+(d.type==='token'?'x':d.cont),o.size||'',o.cls||''];
   if(onField(c)&&c.latency&&P[c.ctrl]&&G.active===c.ctrl)cls.push('latent');
   let badges='';if(onField(c)){if(c.latency)badges+='<span title="Latência: baixado neste turno">💤</span>';if(c.frozen)badges+='<span title="Congelado">❄️</span>';if(isPrisoned(c))badges+='<span title="Preso">⛓️</span>';if(c.suspended)badges+=`<span title="Em treinamento">⏳</span>`;if(c.curled)badges+='<span title="Enrolado">🛡️</span>';if(c.noAbil)badges+='<span title="Sem habilidades">🚫</span>';if(c.noBlock===G.turnNo)badges+='<span title="Não pode bloquear">🚷</span>';if(c.blockedTurn===G.turnNo&&G.active!==c.ctrl)badges+='<span title="Já bloqueou neste turno">🛡️✔</span>';if(offPos(c)||(c.attackedTurn===G.turnNo&&G.active===c.ctrl))badges+='<span title="Fora de posição: atacou no último turno. Se bloquear no turno do oponente, rola 1d6: 1–3 bloqueia, 4–6 falha.">🎲</span>';if(c.wait)badges+=`<span title="Espera ${c.wait} turno(s)">⌛</span>`;if(kws(c).has('runica'))badges+='<span title="Imune a Execuções">✨</span>';if(c.usedTurn===G.turnNo&&abilityOf(c))badges+='<span title="Habilidade usada">✔️</span>';if(readyToAttack(c))badges+='<span class="rdy" title="Pode atacar neste turno">⚔</span>'}
-  const st=isOm?statTxt(c):null;const k=[...(onField(c)?kws(c):new Set(d.kw))].map(x=>KW_LABEL[x]).join(' · ');
+  const st=isOm?statTxt(c):null;const kk=[...(onField(c)?kws(c):new Set(d.kw))].filter(x=>KW_INFO[x]);const k=kk.map(x=>`<span class="kic k-${x}" title="${esc(kwName(x,d))}: ${esc(kwDesc(x,d))}">${KW_INFO[x][0]}</span>`).join('');
   const eqs='';
   return `<div class="${cls.join(' ')}" data-uid="${c.uid}" ${o.act?`data-act="${o.act}"`:''}>
    ${d.type!=='token'?`<div class="lv lc${Math.min(9,Math.max(1,d.lvl))}" title="Nível necessário: ${d.lvl}">${d.lvl}</div>`:''}
@@ -1070,7 +1104,7 @@ function cardHTML(c,o={}){const d=c.d,isOm=d.type==='omnita'||d.type==='token';
    <div class="art">${glyph(d)}${artImg(d)}</div>
    <div class="nm">${esc(d.name)}</div>
    <div class="badges">${badges}</div>
-   <div class="txtbox"><div class="cat">${esc(isOm?d.cat:'')}</div><div class="kw">${esc(k)}</div></div>
+   ${k?`<div class="kics">${k}</div>`:''}<div class="txtbox"><div class="cat">${esc(isOm?d.cat:'')}</div></div>
    <div class="tp t-${d.type}" title="${TYPE_LABEL[d.type]}">${TYPE_TAG[d.type]}</div>
    ${st?`<div class="st ${st.cls}">${st.t}</div>`:''}</div>`}
 function bigHTML(c){const d=c.d,isOm=d.type==='omnita'||d.type==='token';const st=isOm?statTxt(c):null;
@@ -1078,7 +1112,7 @@ function bigHTML(c){const d=c.d,isOm=d.type==='omnita'||d.type==='token';const s
   return `<div class="big c-${d.type==='token'?'x':d.cont}"><div class="bigcard">
   <div class="art">${glyph(d)}${artImg(d)}</div>
   <div class="bnm"><h4>${esc(d.name)}</h4><div class="meta">${TYPE_LABEL[d.type]}${isOm?' — '+esc(d.cat):''} · ${d.cont==='x'?'Extra':d.cont}</div></div>
-  <div class="btxt"><div class="txt">${esc(d.text||'—')}${d.flavor?`\n\n<i class="muted">${esc(d.flavor)}</i>`:''}${esc(extra)}</div>
+  <div class="btxt">${(()=>{const kk=[...(onField(c)?kws(c):new Set(d.kw))].filter(x=>KW_INFO[x]);return kk.length?`<div class="kwrows">${kk.map(x=>`<div class="kwr"><span class="kic k-${x}">${KW_INFO[x][0]}</span><div><b>${esc(kwName(x,d))}</b> <span class="d">${esc(kwDesc(x,d))}</span></div></div>`).join('')}</div>`:''})()}${d.rules?`<div class="rules">${esc(d.rules)}</div>`:(d.type==='omnita'&&!d.kw.length?'':'')}${d.flavor?`<div class="flav">${esc(d.flavor)}</div>`:''}${extra?`<div class="stat">${esc(extra.trim())}</div>`:''}
   <div class="foot"><span>${d.type!=='token'?'Nível '+d.lvl+' · +'+cardXP(d)+' XP'+(d.prot?' · 🛡 '+d.prot:''):'Ficha'}</span><span>${st?st.t:''}</span></div></div></div></div>`}
 function pileHot(p,z){if(!G||G.over||p.id!==VIEW||p.isAI||G.active!==p.id)return false;
   if(z==='grave')return (p.grave.some(x=>x.id==='estatuaViva')&&p.xp>=2&&G.phase!=='combat')||p.hand.some(h=>['paleo','construindo','malNecessario'].includes(h.id)&&canPlay(p,h)&&(h.id!=='construindo'||p.grave.some(x=>x.d.type==='totem')));
