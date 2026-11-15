@@ -114,6 +114,10 @@ button{font:inherit}
 .card.canatk{cursor:pointer;box-shadow:0 0 0 2px var(--red),0 0 16px #d8573f99}
 .card.canatk:hover{transform:translateY(-6px)}
 .card.clickable{cursor:pointer}
+.bigview .bigwrap{width:min(320px,88vw)}
+.bigview .big{max-width:none}
+.bigview .btxt{max-height:70%}
+.card,[data-uid]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .dice3d{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:#0008;cursor:pointer}
 .dice3d .dbox{text-align:center}
 .dice3d .dl{color:var(--gold);font-weight:800;font-size:15px;margin-bottom:4px;text-shadow:0 2px 6px #000}
@@ -1205,6 +1209,7 @@ const RULES_HTML=`<ul>
 <li><b>Conhecimento:</b> apenas 1 por turno, não pode ser anulado.</li>
 <li><b>Latência:</b> omnitas recém-baixados só atacam no próximo turno.</li>
 <li><b>Combate:</b> você declara um atacante; o oponente escolhe bloquear ou receber o dano direto. Vários omnitas podem bloquear o mesmo atacante; ele divide o dano entre eles. Cada omnita só pode bloquear um ataque por turno. O dano que sobra não passa para o jogador. Cada omnita ataca uma vez por turno (Golpe Duplo: duas).</li>
+<li>📱 <b>No celular:</b> segure o dedo numa carta para ver a carta grande com todos os detalhes.</li>
 <li><b>Voar:</b> só pode ser bloqueado por Voar ou Alcance.</li>
 <li><b>Suspender N</b> ⏳: ao jogar a carta, escolha baixá-la normal ou suspensa. Suspensa, ela fica revelada ao oponente e entra em jogo depois de N turnos seus, com o efeito extra indicado.</li>
 <li><b>Fora de Posição</b> 🎲: um omnita que atacou no seu último turno está longe da defesa. Se ele bloquear no turno do oponente, jogue 1d6: 1–3 ele chega a tempo e bloqueia; 4–6 o bloqueio falha e o ataque segue (para os outros bloqueadores ou direto no jogador).</li>
@@ -1223,6 +1228,19 @@ function showRules(){const m=document.createElement('div');m.className='modal-bg
 function gameOver(winner){const m=document.createElement('div');m.className='modal-bg';const hot=HOT();const win=winner&&!winner.isAI;const title=winner===null?'Empate!':hot?`${winner.name} venceu!`:win?'Vitória!':'Derrota';m.innerHTML=`<div class="modal" style="text-align:center"><h3 style="font-size:28px">${title}</h3><p>${hot||win?'Boa aventura, Omnita!':'Os omnitas do oponente prevaleceram.'}</p><button class="btn primary">Jogar novamente</button></div>`;m.querySelector('button').onclick=()=>{m.remove();showStart()};document.body.appendChild(m);render()}
 
 /* =========================== EVENTOS DA UI ========================== */
+// celular: segurar o dedo numa carta abre a carta grande
+let PRESS=null,PRESSED=false;
+function cardFromEl(el){const u=el.dataset.uid;return u.startsWith('def-')?fakeCard(u.slice(4)):INST.get(+u)}
+function showBig(c){const m=document.createElement('div');m.className='modal-bg bigview';m.innerHTML=`<div class="bigwrap">${bigHTML(c)}<p style="text-align:center;margin:10px 0 0"><button class="btn primary">Fechar</button></p></div>`;
+  m.onclick=e=>{if(e.target===m||e.target.closest('button'))m.remove()};document.body.appendChild(m)}
+document.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')return;const el=e.target.closest&&e.target.closest('[data-uid]');if(!el||el.closest('.bigview'))return;
+  PRESSED=false;const x=e.clientX,y=e.clientY;clearTimeout(PRESS&&PRESS.t);
+  PRESS={x,y,t:setTimeout(()=>{const c=cardFromEl(el);if(!c)return;PRESSED=true;if(navigator.vibrate)try{navigator.vibrate(15)}catch(_){}showBig(c)},420)}},{passive:true});
+const endPress=e=>{if(PRESS){if(e.type!=='pointermove'||Math.hypot(e.clientX-PRESS.x,e.clientY-PRESS.y)>10){clearTimeout(PRESS.t);PRESS=null}}};
+['pointerup','pointercancel','pointermove'].forEach(t=>document.addEventListener(t,endPress,{passive:true}));
+document.addEventListener('click',e=>{if(PRESSED){PRESSED=false;e.stopPropagation();e.preventDefault()}},true);
+document.addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('[data-uid]'))e.preventDefault()});
+
 let TILT=null;
 function untilt(){if(TILT){TILT.style.rotate='';TILT.classList.remove('tilt');TILT=null}}
 document.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const el=e.target.closest&&e.target.closest('.card:not(.back)');
