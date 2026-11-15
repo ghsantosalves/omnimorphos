@@ -216,6 +216,16 @@ button{font:inherit}
 .pb-right .btn{padding:6px 12px;font-size:13px}
 .sh{display:none}
 @media (max-width:1300px){#mybar.pbar{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'l l' 'm r'}.pb-mid{border-left:0;padding-left:0}}
+@media (max-width:900px){
+#myhand{flex-wrap:nowrap;justify-content:center;gap:0;min-height:190px;padding:40px 6px 4px;overflow:visible}
+#myhand .card{margin-left:min(6px,calc((100vw - 80px - var(--n)*100px)/max(1,var(--n) - 1)));transform-origin:50% 130%;transform:rotate(calc((var(--i) - (var(--n) - 1)/2)*3deg));transition:transform .16s ease-out}
+#myhand .card:first-child{margin-left:0}
+#myhand .card.lift{transform:translateY(-34px) scale(1.16);z-index:20;box-shadow:0 0 0 2px var(--gold),0 10px 24px #000c}
+#start{grid-template-columns:minmax(0,1fr);place-items:start center}
+#start .box{min-width:0}
+#start h1{font-size:clamp(26px,9vw,64px);letter-spacing:1px}
+.decks{grid-template-columns:minmax(0,1fr)}
+}
 @media (max-width:900px){.lg{display:none}.sh{display:inline}.pbar .nm small{display:none}.pbar .hpbar,.pbar .xpbar{width:60px}.hint2{font-size:11px}#mybar.pbar{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'l l' 'm r'}.pb-right .btn{padding:6px 10px}.pb-mid{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:6px}.pb-right{justify-content:flex-start}}
 .turnchip{font-size:11.5px;font-weight:800;border-radius:10px;padding:1px 8px;background:#e0ad4826;color:var(--gold);border:1px solid #e0ad4866}
 .pass-bg{position:fixed;inset:0;background:radial-gradient(ellipse at center,#2f2117,#0e0a08);display:grid;place-items:center;z-index:80;padding:16px;text-align:center}
@@ -1134,7 +1144,8 @@ function render(){
   $('#opphand').innerHTML='';
   $('#oppfield').innerHTML=fieldHTML(A,false,myTurn);$('#oppback').innerHTML='';
   $('#myfield').innerHTML=fieldHTML(H,true,myTurn);$('#myback').innerHTML='';
-  $('#myhand').innerHTML=H.hand.map(c=>{const ok=myTurn&&canPlay(H,c);return cardHTML(c,{act:'play',cls:ok?'playable':''})}).join('');
+  $('#myhand').innerHTML=H.hand.map(c=>{const ok=myTurn&&canPlay(H,c);return cardHTML(c,{act:'play',cls:(ok?'playable':'')+(LIFT===c.uid?' lift':'')})}).join('');
+  {const hs=document.querySelectorAll('#myhand .card');hs.forEach((el,i)=>{el.style.setProperty('--i',i);el.style.setProperty('--n',hs.length)})}
   const ph=[['inicio','Início: efeitos do turno e compra de 1 carta'],['main1','Fase Inicial: jogar cartas e baixar omnitas'],['combat','Combate: atacar com omnitas prontos'],['main2','Fase Final: jogar mais cartas'],['fim','Fim do turno: passa a vez']];
   const NOMEF={main1:'Fase Inicial',combat:'Combate',main2:'Fase Final'};
   const L=level(H);const meu=G.active===VIEW;
@@ -1212,7 +1223,7 @@ const RULES_HTML=`<ul>
 <li><b>Conhecimento:</b> apenas 1 por turno, não pode ser anulado.</li>
 <li><b>Latência:</b> omnitas recém-baixados só atacam no próximo turno.</li>
 <li><b>Combate:</b> você declara um atacante; o oponente escolhe bloquear ou receber o dano direto. Vários omnitas podem bloquear o mesmo atacante; ele divide o dano entre eles. Cada omnita só pode bloquear um ataque por turno. O dano que sobra não passa para o jogador. Cada omnita ataca uma vez por turno (Golpe Duplo: duas).</li>
-<li>📱 <b>No celular:</b> segure o dedo numa carta para ver a carta grande com todos os detalhes.</li>
+<li>📱 <b>No celular:</b> toque numa carta da mão para levantá-la e toque de novo para jogar. Segure o dedo numa carta para ver a carta grande com todos os detalhes.</li>
 <li><b>Voar:</b> só pode ser bloqueado por Voar ou Alcance.</li>
 <li><b>Suspender N</b> ⏳: ao jogar a carta, escolha baixá-la normal ou suspensa. Suspensa, ela fica revelada ao oponente e entra em jogo depois de N turnos seus, com o efeito extra indicado.</li>
 <li><b>Fora de Posição</b> 🎲: um omnita que atacou no seu último turno está longe da defesa. Se ele bloquear no turno do oponente, jogue 1d6: 1–3 ele chega a tempo e bloqueia; 4–6 o bloqueio falha e o ataque segue (para os outros bloqueadores ou direto no jogador).</li>
@@ -1231,6 +1242,7 @@ function showRules(){const m=document.createElement('div');m.className='modal-bg
 function gameOver(winner){const m=document.createElement('div');m.className='modal-bg';const hot=HOT();const win=winner&&!winner.isAI;const title=winner===null?'Empate!':hot?`${winner.name} venceu!`:win?'Vitória!':'Derrota';m.innerHTML=`<div class="modal" style="text-align:center"><h3 style="font-size:28px">${title}</h3><p>${hot||win?'Boa aventura, Omnita!':'Os omnitas do oponente prevaleceram.'}</p><button class="btn primary">Jogar novamente</button></div>`;m.querySelector('button').onclick=()=>{m.remove();showStart()};document.body.appendChild(m);render()}
 
 /* =========================== EVENTOS DA UI ========================== */
+let LIFT=null;const MOBILE=()=>matchMedia('(max-width:900px)').matches;
 // celular: segurar o dedo numa carta abre a carta grande
 let PRESS=null,PRESSED=false;
 function cardFromEl(el){const u=el.dataset.uid;return u.startsWith('def-')?fakeCard(u.slice(4)):INST.get(+u)}
@@ -1265,7 +1277,8 @@ document.addEventListener('click',async e=>{
   if(act==='attackall'){for(let i=0;i<40&&!G.over;i++){const a=P[VIEW].field.filter(canAttack).sort((x,y)=>atk(y)-atk(x))[0];if(!a)break;await attack(a)}render();return}
   if(act==='end'){await endTurn();return}
   const c=INST.get(+a.dataset.uid);if(!c)return;
-  if(act==='play'){const why=whyNot(H,c);if(why){log(`✋ ${c.d.name}: ${why}.`);return}G.busy=true;await playCard(H,c);if(!G.over)G.busy=false;render();return}
+  if(act==='play'&&MOBILE()&&LIFT!==c.uid){LIFT=c.uid;render();return}
+  if(act==='play'){LIFT=null;const why=whyNot(H,c);if(why){log(`✋ ${c.d.name}: ${why}.`);return}G.busy=true;await playCard(H,c);if(!G.over)G.busy=false;render();return}
   if(act==='attack'){await attack(c);return}
   if(act==='ability'){G.busy=true;const a2=abilityOf(c);const yes=await ask(c.d.name,[{label:a2.label,value:true,primary:true},{label:'Cancelar',value:false}],{preview:c});if(yes)await useAbility(H,c);if(!G.over)G.busy=false;render();return}
 });
