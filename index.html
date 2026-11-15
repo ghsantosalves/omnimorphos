@@ -267,8 +267,8 @@ const d6=()=>1+rnd(6), d20=()=>1+rnd(20), coin=()=>Math.random()<.5;
 /* ---------------- dados e moeda em 3D (three.js, carregado só quando precisa) ---------------- */
 let THREE_P=null;
 function loadThree(){if(window.THREE)return Promise.resolve();if(!THREE_P)THREE_P=new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';sc.onload=ok;sc.onerror=()=>{THREE_P=null;no()};document.head.appendChild(sc)});return THREE_P}
-async function roll(sides,label){const r=1+rnd(sides);await show3D(sides===6?'d6':'d20',r,label);return r}
-async function flip(label){const w=coin();await show3D('coin',w?1:0,label);return w}
+async function roll(sides,label){if(G)G.cancellable=false;const r=1+rnd(sides);await show3D(sides===6?'d6':'d20',r,label);return r}
+async function flip(label){if(G)G.cancellable=false;const w=coin();await show3D('coin',w?1:0,label);return w}
 function faceTex(draw){const cv=document.createElement('canvas');cv.width=cv.height=256;const g=cv.getContext('2d');draw(g);const t=new THREE.CanvasTexture(cv);t.anisotropy=4;return t}
 function pipFace(n){return faceTex(g=>{const gr=g.createLinearGradient(0,0,256,256);gr.addColorStop(0,'#fbf3e2');gr.addColorStop(1,'#e2d2b2');g.fillStyle=gr;g.fillRect(0,0,256,256);g.strokeStyle='#b8893a';g.lineWidth=14;g.strokeRect(7,7,242,242);
   const P={1:[[2,2]],2:[[1,1],[3,3]],3:[[1,1],[2,2],[3,3]],4:[[1,1],[3,1],[1,3],[3,3]],5:[[1,1],[3,1],[2,2],[1,3],[3,3]],6:[[1,1],[3,1],[1,2],[3,2],[1,3],[3,3]]}[n];
@@ -664,7 +664,7 @@ function checkOver(){if(G.over)return true;const lost=P.filter(p=>p.hp<=0||p.dec
 
 /* ============================ CANCELAR JOGADA ======================== */
 const CANCEL=Symbol('cancel');
-const canAbort=p=>!!(G&&G.cancellable&&!p.isAI&&G.active===p.id);
+const canAbort=p=>!!(G&&G.cancellable&&!p.isAI);
 function afterChoice(r){if(r===CANCEL)throw CANCEL;if(G)G.cancellable=false;return r}
 
 /* ===================== MODO 2 JOGADORES (passar a vez) ============== */
@@ -744,7 +744,7 @@ const canPlay=(p,c,win)=>!whyNot(p,c,win);
 
 async function playCard(p,c,win=null){
   const hp0=p.hp,xp0=p.xp,sum0=p.sumUsed,know0=p.knowUsed,played0=p.played;
-  G.cancellable=!p.isAI&&!win;
+  G.cancellable=!p.isAI;
   try{return await playCardInner(p,c,win)}
   catch(e){if(e!==CANCEL)throw e;
     for(const z of ['hand','grave','void'])removeFrom(p[z],c);p.hand.push(c);
@@ -1068,7 +1068,10 @@ async function aiTurn(p){
 /* ========================= HABILIDADES ATIVAS ======================= */
 function abilityOf(c){if(c.noAbil)return null;if(c.d.act)return c.d.act;if(c.equips&&c.equips.some(e=>e.id==='cajado'))return{label:'Cajado Solar: impedir um omnita de bloquear',can:(c,p)=>opp(p).field.length>0,run:async(c,p)=>{const t=await pickTarget(p,{title:'Cajado Solar: quem não poderá bloquear?',kind:'oppOmnita',destroy:true});if(t){t.noBlock=G.turnNo;log(`${t.d.name} não poderá bloquear neste turno.`)}},ai:p=>G.phase==='main1'&&opp(p).field.length?7:0};return null}
 function canUseAbility(p,c){const a=abilityOf(c);if(!a||G.over)return false;if(G.active!==p.id||G.phase==='combat')return false;if(c.ctrl!==p.id)return false;if(c.usedTurn===G.turnNo)return false;if(c.d.type!=='totem'&&(c.frozen||isPrisoned(c)||c.suspended))return false;if(a.can&&!a.can(c,p))return false;return true}
-async function useAbility(p,c){const a=abilityOf(c);c.usedTurn=G.turnNo;log(`${p.name} usa ${c.d.name}: ${a.label}.`);G.effSrc=c;try{await a.run(c,p)}finally{G.effSrc=null}await sba();checkOver();render()}
+async function useAbility(p,c){const a=abilityOf(c);const prev=c.usedTurn;c.usedTurn=G.turnNo;G.cancellable=!p.isAI;G.effSrc=c;
+  try{await a.run(c,p);log(`${p.name} usa ${c.d.name}: ${a.label}.`)}
+  catch(e){if(e!==CANCEL)throw e;c.usedTurn=prev;log(`${c.d.name} — habilidade cancelada.`);render();return}
+  finally{G.effSrc=null;G.cancellable=false}await sba();checkOver();render()}
 
 /* ============================== RENDER ============================== */
 const GLYPH_NAME=[['Panda','🐼'],['Gorila','🦍'],['Onça','🐆'],['Tigre','🐅'],['Yeti','❄️'],['Behemoth','🦏'],['Kraken','🐙'],['Arraia','🐟'],['Baiacu','🐡'],['Morcego','🦇'],['Cavalo','🐴'],['Sereia','🧜'],['Aracne','🕷️'],['Manequim','🎯'],['Zumbi','🧟'],['Fênix','🔥'],['Slime','🟢'],['Fada','🦋'],['Urso','🐻'],['Pangolim','🦔'],['Cobra','🐍'],['Salamandra','🦎'],['Elefante','🐘'],['Golem de Gelo','🧊'],['Golem','🪨'],['Dragão de Gelo','🐲'],['Dragão','🐉'],['Espírito Elemental de Fogo','🔥'],['Espírito Elemental de Gelo','❄️'],['Deusa','🌟'],['Asura','🌟'],['Trollin','👺'],['Sapo','🐸'],['Harpia','🦅'],['Falcão','🦅'],['Lorde do Vazio','🌑'],['Demônio','😈'],['Xamã','🪶'],['Bruxa','🧙'],['Monge','🧘'],['Lutador','🥋'],['Pescador','🎣'],['Arqueiro','🏹'],['Iniciado','🧙'],['Mestre','🧙'],['Aranthor','👑'],['Cavaleir','🛡️'],['Nativo','🪶']];
@@ -1158,7 +1161,7 @@ function render(){
 /* ============================== MODAIS ============================== */
 function ask(title,options,o={}){return new Promise(res=>{
   const m=document.createElement('div');m.className='modal-bg';
-  m.innerHTML=`<div class="modal"><h3>${esc(title)}</h3>${o.text?`<p>${esc(o.text)}</p>`:''}${o.preview?`<div style="display:flex;justify-content:center;margin-bottom:6px">${cardHTML(o.preview)}</div>`:''}<div class="opts"></div>${o.cancel?`<button class="btn cancel">${esc(o.cancel)}</button>`:''}${o.abort?' <button class="btn danger abort">Cancelar jogada</button>':''}</div>`;
+  m.innerHTML=`<div class="modal"><h3>${esc(title)}</h3>${o.text?`<p>${esc(o.text)}</p>`:''}${o.preview?`<div style="display:flex;justify-content:center;margin-bottom:6px">${cardHTML(o.preview)}</div>`:''}<div class="opts"></div>${o.cancel?`<button class="btn cancel">${esc(o.cancel)}</button>`:''}${o.abort?' <button class="btn danger abort">✕ Cancelar</button>':''}</div>`;
   const box=m.querySelector('.opts');
   for(const op of options){let el;if(op.card){el=document.createElement('div');el.className='opt-card';el.innerHTML=cardHTML(op.card)+(op.label?`<div class="optlbl">${esc(op.label)}</div>`:'')}else{el=document.createElement('button');el.className='btn'+(op.primary?' primary':'');el.textContent=op.label}
     if(op.disabled)el.classList.add(op.show?"static":"disabled");else el.onclick=()=>{m.remove();res(op.value)};box.appendChild(el)}
@@ -1192,7 +1195,7 @@ function askResponse(R,caster,card,opts){return new Promise(res=>{
   m.querySelector('.go').onclick=()=>{m.remove();res(null)};document.body.appendChild(m)})}
 function askMulti(title,cards,min,max,abort){return new Promise(res=>{
   const sel=new Set();const m=document.createElement('div');m.className='modal-bg';
-  m.innerHTML=`<div class="modal"><h3>${esc(title)}</h3><p>Escolha ${min===max?min:`de ${min} a ${max}`} carta(s).</p><div class="opts"></div><button class="btn primary ok">Confirmar</button>${abort?' <button class="btn danger abort">Cancelar jogada</button>':''}</div>`;
+  m.innerHTML=`<div class="modal"><h3>${esc(title)}</h3><p>Escolha ${min===max?min:`de ${min} a ${max}`} carta(s).</p><div class="opts"></div><button class="btn primary ok">Confirmar</button>${abort?' <button class="btn danger abort">✕ Cancelar</button>':''}</div>`;
   const box=m.querySelector('.opts'),ok=m.querySelector('.ok');if(abort)m.querySelector('.abort').onclick=()=>{m.remove();res(CANCEL)};
   const upd=()=>{ok.disabled=sel.size<min||sel.size>max};
   for(const c of cards){const el=document.createElement('div');el.className='opt-card';el.innerHTML=cardHTML(c);el.onclick=()=>{if(sel.has(c)){sel.delete(c);el.classList.remove('sel')}else if(sel.size<max){sel.add(c);el.classList.add('sel')}upd()};box.appendChild(el)}
