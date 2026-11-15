@@ -1358,7 +1358,7 @@ async function netJoin(code,name,deckKey){await netInit();code=code.trim().toUpp
   r.child('toHost/bye').onDisconnect().set(true);
   const onState=s=>{const st=s.val();if(st)NET.q=NET.q.then(()=>guestApply(st))};
   const onMsg=s=>{const m=s.val();if(m&&m.t==='ask')NET.q=NET.q.then(()=>guestPrompt(m)).catch(e=>console.error(e))};
-  const onStatus=s=>{if(s.val()==='closed'&&!(G&&G.over))netAlert('O anfitrião saiu da partida.')};
+  const onStatus=s=>{const v=s.val();if((v==='closed'||v===null)&&NET.role==='guest'&&!(G&&G.over))netAlert('O anfitrião saiu da partida.')};
   r.child('toGuest/s').on('value',onState);r.child('toGuest/m').on('child_added',onMsg);r.child('status').on('value',onStatus);
   NET.subs.push(()=>{r.child('toGuest/s').off('value',onState);r.child('toGuest/m').off('child_added',onMsg);r.child('status').off('value',onStatus)});
   netSend({t:'hello',name,deck:deckKey,list:DECKS[deckKey].list})}
