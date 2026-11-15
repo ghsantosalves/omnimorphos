@@ -118,6 +118,9 @@ button{font:inherit}
 .bigview .big{max-width:none}
 .bigview .btxt{max-height:70%}
 .card,[data-uid]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.inp{background:#0006;border:1px solid var(--line);border-radius:8px;color:var(--text);padding:8px 10px;font-size:15px;width:min(260px,100%)}
+.online-box{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:16px 0 6px}.online-box>div{min-width:220px}
+.ost{min-height:24px}.ost .code{font-family:Cinzel,serif;font-size:30px;letter-spacing:5px;color:var(--gold);vertical-align:middle;margin:0 6px}
 .dice3d{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:#0008;cursor:pointer}
 .dice3d .dbox{text-align:center}
 .dice3d .dl{color:var(--gold);font-weight:800;font-size:15px;margin-bottom:4px;text-shadow:0 2px 6px #000}
@@ -413,9 +416,9 @@ O('gorilla','Gorila','Gaia','Mamífero',4,4,3,5,'Atropelar: o dano que sobrar do
 O('aracne','Aracne','Gaia','Humanoide Aranha',2,2,1,1,'Esta carta recebe +1/+1 para cada carta que destruir em combate.');
 O('nativoLutador','Nativo Lutador','Gaia','Humano Nativo',3,2,2,2,'Golpe Duplo.',{kw:['golpe']});
 O('sapoIlusionista','Sapo Ilusionista','Gaia','Anfíbio Sapo Mago',2,2,2,2,'Quando esta carta entra em jogo, crie duas cópias fichas 1/1 que permanecem em jogo até o final do turno.',{enter:async(c,p)=>{summonToken(p,'tSapo',{temp:true});summonToken(p,'tSapo',{temp:true})}});
-O('sapoLadino','Sapo Ladino','Gaia','Anfíbio Sapo',2,1,1,1,'Quando esta carta entrar, pegue uma carta aleatória da mão do oponente.',{enter:async(c,p)=>{const o=opp(p);if(!o.hand.length)return;const x=o.hand[rnd(o.hand.length)];removeFrom(o.hand,x);p.hand.push(x);log(`${p.name} rouba uma carta da mão de ${o.name}${p.isAI||HOT()?'':' ('+x.d.name+')'}.`)}});
+O('sapoLadino','Sapo Ladino','Gaia','Anfíbio Sapo',2,1,1,1,'Quando esta carta entrar, pegue uma carta aleatória da mão do oponente.',{enter:async(c,p)=>{const o=opp(p);if(!o.hand.length)return;const x=o.hand[rnd(o.hand.length)];removeFrom(o.hand,x);p.hand.push(x);log(`${p.name} rouba uma carta da mão de ${o.name}${p.isAI||SECRET()?'':' ('+x.d.name+')'}.`)}});
 O('sapoNinja','Sapo Ninja','Gaia','Anfíbio Sapo',1,2,1,1,'Golpe Duplo.',{kw:['golpe']});
-O('arraia','Arraia Mística','Gaia','Peixe Místico',5,6,4,4,'Uma vez por turno, você pode olhar a carta do topo do seu baralho. Se for uma carta omnita, ganhe 2 de experiência.',{act:{label:'Olhar o topo do baralho',run:async(c,p)=>{const t=p.deck[p.deck.length-1];if(!t)return;log(`${p.name} olha o topo${p.isAI||HOT()?'':': '+t.d.name}.`);if(t.d.type==='omnita')gainXP(p,2,'Arraia Mística')},ai:()=>6}});
+O('arraia','Arraia Mística','Gaia','Peixe Místico',5,6,4,4,'Uma vez por turno, você pode olhar a carta do topo do seu baralho. Se for uma carta omnita, ganhe 2 de experiência.',{act:{label:'Olhar o topo do baralho',run:async(c,p)=>{const t=p.deck[p.deck.length-1];if(!t)return;log(`${p.name} olha o topo${p.isAI||SECRET()?'':': '+t.d.name}.`);if(t.d.type==='omnita')gainXP(p,2,'Arraia Mística')},ai:()=>6}});
 O('sapoLutador','Sapo Lutador','Gaia','Anfíbio Sapo',3,2,2,3,'Atropelar.',{kw:['atropelar'],flavor:'Um sapo da tribo dos sapos de Gaia.'});
 O('kraken','Kraken Ganancioso','Gaia','Molusco Místico',6,6,6,8,'Atropelar. Como custo adicional para jogar esta carta, ofereça um omnita ativo: envie o omnita escolhido para o cemitério.',{kw:['atropelar'],can:p=>p.field.length>0,cost:async p=>{const c=await chooseCard(p,'Kraken: escolha um omnita para oferecer',p.field,{ai:x=>-val(x),optional:!p.isAI});if(!c)return false;await destroy(c,{force:true});return true}});
 S('papagaio','Papagaio Correio','Gaia','instant',2,2,'Compre 1 carta.',{play:async p=>draw(p,1),ai:()=>10});
@@ -503,7 +506,7 @@ O('esfinge','Esfinge de Apólia',AP,'Besta Mística Alada',4,6,6,5,'Voar.',{kw:[
 O('arqueiroSerp','Arqueiro Serpente de Apólia',AP,'Humanoide Cobra Arqueiro',2,1,1,1,'Esta carta não precisa esperar a Latência.',{kw:['agil'],prot:3});
 O('gato','Gato Alado do Deserto Apoliano',AP,'Besta Mística Alada',2,1,1,1,'Voar. Ataca diretamente os pontos de vida do oponente (ignora a Proteção).',{kw:['voar'],prot:2});
 O('guerreiroSerp','Guerreiro Serpente de Apólia',AP,'Humanoide Cobra Guerreiro',2,1,1,1,'Esta carta não precisa esperar a Latência.',{kw:['agil'],prot:3});
-O('bruxaDeserto','Bruxa do Deserto',AP,'Humano Bruxo',2,2,1,2,'Não precisa esperar a Latência. Ao entrar, selecione uma carta aleatória na mão do oponente e veja.',{kw:['agil'],prot:3,enter:async(c,p)=>{const o=opp(p);if(!o.hand.length)return;const x=o.hand[rnd(o.hand.length)];log(HOT()?`${p.name} viu uma carta aleatória da mão de ${o.name}.`:p.isAI?`O oponente viu uma carta da sua mão: ${x.d.name}.`:`Carta aleatória do oponente: ${x.d.name}.`)}});
+O('bruxaDeserto','Bruxa do Deserto',AP,'Humano Bruxo',2,2,1,2,'Não precisa esperar a Latência. Ao entrar, selecione uma carta aleatória na mão do oponente e veja.',{kw:['agil'],prot:3,enter:async(c,p)=>{const o=opp(p);if(!o.hand.length)return;const x=o.hand[rnd(o.hand.length)];log(SECRET()?`${p.name} viu uma carta aleatória da mão de ${o.name}.`:p.isAI?`O oponente viu uma carta da sua mão: ${x.d.name}.`:`Carta aleatória do oponente: ${x.d.name}.`)}});
 O('grifo','Grifo de Apólia',AP,'Fera Mística Alada',2,4,4,5,'Voar.',{kw:['voar'],prot:4});
 O('magoSerp','Mago Serpente de Apólia',AP,'Humanoide Cobra Mago',2,2,2,1,'Ao entrar, procure em seu baralho uma Execução Regular e adicione à mão. Embaralhe.',{prot:3,enter:async(c,p)=>{await search(p,x=>x.d.type==='regular','Mago Serpente: escolha uma Execução Regular')}});
 O('minotauro','Minotauro do Deserto',AP,'Fera Mística',2,7,5,7,'Esta carta precisa esperar 3 turnos antes do seu primeiro ataque.',{prot:2,wait:3});
@@ -604,6 +607,7 @@ const DECKS={
 /* =============================== ESTADO ============================= */
 let P=[], G=null, VIEW=0;
 const HOT=()=>!!(G&&G.mode==='hot');
+const ONLINE=()=>!!(G&&G.mode==='online');const SECRET=()=>HOT()||ONLINE();
 function mk(id,owner){const c={uid:UID++,id,d:DEF[id],owner,ctrl:owner,dmg:0,mods:[],latency:true,atkUsed:0,equips:[],frozen:0,suspended:0,prison:null,curled:false,noAbil:false,usedTurn:-1,temp:false};INST.set(c.uid,c);return c}
 function newPlayer(id,name,isAI,deck){const p={id,name,isAI,deckName:deck,isPlayer:true,deck:[],hand:[],field:[],totems:[],grave:[],void:[],hp:RULES.startHP,xp:0,sumUsed:0,knowUsed:false,lvlBonus:0,dots:[],hots:[],delayed:[],noSummon:0,fenix:[],decked:false,prot:0};for(const[i,n]of DECKS[deck].list)for(let k=0;k<n;k++)p.deck.push(mk(i,id));shuffle(p.deck);return p}
 const opp=p=>P[1-p.id];
@@ -629,7 +633,8 @@ const sumVal=a=>a.reduce((s,c)=>s+val(c),0);
 const isPrisoned=c=>c.prison&&allField().some(x=>x.uid===c.prison);
 
 /* =============================== LOG/FX ============================= */
-function log(msg,cls=''){const el=document.createElement('div');if(cls)el.className=cls;el.textContent=msg;const L=$('#log');L.appendChild(el);L.scrollTop=L.scrollHeight}
+let LOGBUF=[];
+function log(msg,cls=''){LOGBUF.push([msg,cls]);if(LOGBUF.length>200)LOGBUF.splice(0,LOGBUF.length-200);const el=document.createElement('div');if(cls)el.className=cls;el.textContent=msg;const L=$('#log');L.appendChild(el);L.scrollTop=L.scrollHeight}
 function floatTxt(target,txt,cls=''){let el=null;if(target&&target.isPlayer)el=$(target.id===VIEW?'#mybar .hp':'#oppbar .hp');else if(target)el=document.querySelector(`[data-uid="${target.uid}"]`);if(!el)return;const r=el.getBoundingClientRect();const f=document.createElement('div');f.className='float '+cls;f.textContent=txt;f.style.left=(r.left+r.width/2-10)+'px';f.style.top=(r.top)+'px';document.body.appendChild(f);setTimeout(()=>f.remove(),1000)}
 
 /* ============================ AÇÕES BÁSICAS ========================= */
@@ -686,12 +691,14 @@ function afterChoice(r){if(r===CANCEL)throw CANCEL;if(G)G.cancellable=false;retu
 /* ===================== MODO 2 JOGADORES (passar a vez) ============== */
 let FOCUS_DEPTH=0;
 function focus(p){return new Promise(res=>{
+  if(ONLINE()){res();return}
   if(!HOT()||p.isAI||VIEW===p.id){if(!p.isAI)VIEW=p.id;res();return}
   const m=document.createElement('div');m.className='pass-bg';
   m.innerHTML=`<div class="pass"><h2>Vez de ${esc(p.name)}</h2><p>Passe o computador para ${esc(p.name)}. A outra pessoa não deve olhar.</p><button class="btn primary">Estou pronto</button></div>`;
   m.querySelector('button').onclick=()=>{m.remove();VIEW=p.id;render();res()};
   document.body.appendChild(m)})}
 async function asHuman(p,fn){
+  if(p&&p.remote){REMOTE_CAP=true;let pr;try{pr=fn()}finally{REMOTE_CAP=false}return await pr}
   FOCUS_DEPTH++;
   try{await focus(p);render();return await fn()}
   finally{FOCUS_DEPTH--;if(FOCUS_DEPTH===0&&HOT()&&G&&!G.over&&P[G.active]&&!P[G.active].isAI&&VIEW!==G.active)await focus(P[G.active])}}
@@ -728,7 +735,7 @@ async function search(p,filter,title,o={}){
   const cands=[];for(const z of from)for(const c of p[z])if(filter(c))cands.push(c);
   if(!cands.length){log('Nenhuma carta encontrada.');if(from.includes('deck'))shuffle(p.deck);return null}
   const c=await chooseCard(p,title,cands,{optional:true,ai:x=>(x.d.lvl<=level(p)+1?10:0)+val(x)});
-  if(c){for(const z of from)if(removeFrom(p[z],c))break;if(dest==='hand'){p.hand.push(c);log(`${p.name} adiciona ${p.isAI?'uma carta':c.d.name} à mão.`)}}
+  if(c){for(const z of from)if(removeFrom(p[z],c))break;if(dest==='hand'){p.hand.push(c);log(`${p.name} adiciona ${p.isAI||SECRET()?'uma carta':c.d.name} à mão.`)}}
   if(from.includes('deck'))shuffle(p.deck);return c}
 async function discardChoose(p,n,title){n=Math.min(n,p.hand.length);if(!n)return;
   const cs=p.isAI?[...p.hand].sort((a,b)=>aiCardValue(p,a)-aiCardValue(p,b)).slice(0,n):await asHuman(p,()=>askMulti(title,p.hand,n,n));
@@ -776,11 +783,11 @@ async function playCardInner(p,c,win){
   if(d.cost){const ok=await d.cost(p,c);if(!ok){p.hand.push(c);log('Cancelado.');render();return false}}
   let eqT=null,mountT=null;
   if(d.type==='equip'){eqT=await pickEquip(p,d);if(!eqT){p.hand.push(c);log('Cancelado.');render();return false}}
-  if(d.type==='omnita'&&d.kw.includes('montaria')){const hosts=p.field.filter(isHumanoid);if(hosts.length){mountT=p.isAI?null:await ask(`${d.name}: Montaria`,[{label:'Colocar em campo',value:null,primary:true},...hosts.map(h=>({card:h,value:h,label:'Equipar como montaria'}))])}}
+  if(d.type==='omnita'&&d.kw.includes('montaria')){const hosts=p.field.filter(isHumanoid);if(hosts.length){mountT=p.isAI?null:await asHuman(p,()=>ask(`${d.name}: Montaria`,[{label:'Colocar em campo',value:null,primary:true},...hosts.map(h=>({card:h,value:h,label:'Equipar como montaria'}))]))}}
   c.suspChoice=false;
   if(d.type==='omnita'&&d.susp&&!mountT){
     if(p.isAI)c.suspChoice=p.hp>=12&&opp(p).field.reduce((t,x)=>t+atk(x),0)<p.hp/2;
-    else c.suspChoice=await ask(`${d.name}: como baixar?`,[{label:'Baixar normal',value:false,primary:true},{label:`Baixar suspensa (${d.susp.t} turnos, ${d.susp.txt})`,value:true}],{preview:c,text:'Suspensa: a carta fica revelada ao oponente e entra em jogo depois, com o efeito extra.',cancel:'Cancelar'});
+    else c.suspChoice=await asHuman(p,()=>ask(`${d.name}: como baixar?`,[{label:'Baixar normal',value:false,primary:true},{label:`Baixar suspensa (${d.susp.t} turnos, ${d.susp.txt})`,value:true}],{preview:c,text:'Suspensa: a carta fica revelada ao oponente e entra em jogo depois, com o efeito extra.',cancel:'Cancelar'}));
     if(c.suspChoice==null)throw CANCEL;
     if(c.suspChoice)log(`⏳ ${p.name} baixa ${d.name} suspensa por ${d.susp.t} turnos (${d.susp.txt}).`)}
   if(d.type==='omnita')p.sumUsed+=d.lvl;
@@ -809,14 +816,14 @@ async function playCardInner(p,c,win){
   await sba();checkOver();render();return true}
 async function pickEquip(p,d){const ts=equipTargets(p,d);if(!ts.length)return null;
   if(p.isAI){if(d.id==='coleira')return opp(p).field.length?[...opp(p).field].sort((a,b)=>atk(b)-atk(a))[0]:null;const mine=ts.filter(c=>c.ctrl===p.id);return mine.sort((a,b)=>val(b)-val(a))[0]||null}
-  return await ask(`${d.name}: escolha o omnita`,ts.map(c=>({card:c,value:c,label:c.ctrl===p.id?'seu':'oponente'})),{cancel:'Cancelar'})}
+  return await asHuman(p,()=>ask(`${d.name}: escolha o omnita`,ts.map(c=>({card:c,value:c,label:c.ctrl===p.id?'seu':'oponente'})),{cancel:'Cancelar'}))}
 
 /* resposta a uma carta jogada pelo oponente (anular etc.). retorna true se anulada */
 async function responseWindow(R,caster,card){
   const win={type:'spell',card};
   const opts=card.d.type==='knowledge'?[]:R.hand.filter(x=>canPlay(R,x,win));
   let pick=null;
-  if(!R.isAI&&(!opts.length&&SETTINGS.skipNoResponse))return false;
+  if(!R.isAI&&(!opts.length&&(SETTINGS.skipNoResponse||R.remote)))return false;
   if(R.isAI&&!opts.length)return false;
   if(R.isAI){
     if(G.diff==='facil')return false;
@@ -923,7 +930,7 @@ async function assignOrder(A,att,blks){
   if(blks.length<2)return blks;
   if(A.isAI)return[...blks].sort((a,b)=>(def(a)-a.dmg)-(def(b)-b.dmg));
   const order=[];let rest=[...blks];
-  while(rest.length>1){const c=await ask(`${att.d.name}: distribuir ${atk(att)} de dano`,rest.map(b=>({card:b,value:b,label:`${order.length+1}º a receber`})),{text:'O dano vai em ordem: cada bloqueador recebe o suficiente para ser destruído antes de passar ao próximo.'});order.push(c);rest=rest.filter(x=>x!==c)}
+  while(rest.length>1){const c=await asHuman(A,()=>ask(`${att.d.name}: distribuir ${atk(att)} de dano`,rest.map(b=>({card:b,value:b,label:`${order.length+1}º a receber`})),{text:'O dano vai em ordem: cada bloqueador recebe o suficiente para ser destruído antes de passar ao próximo.'}));order.push(c);rest=rest.filter(x=>x!==c)}
   return[...order,...rest]}
 async function fight(att,blks){
   const A=P[att.ctrl];
@@ -1002,7 +1009,7 @@ async function turnBegin(p){
   for(const c of p.field){if(c.wait){c.wait--;c.latency=c.wait>0}else c.latency=false;c.atkUsed=0;c.curled=false;if(c.suspended){c.suspended--;if(!c.suspended){log(`${c.d.name} termina o treinamento.`);if(c.trainBonus){c.trainBonus=false;c.mods.push({a:1,d:1});log(`${c.d.name} recebe +1/+1.`)}else gainXP(p,2,'Treinamento')}}}
   expireProt(p);
   {const n=p.totems.filter(t=>t.id==='circuitosProt').length;if(n){addProt(p,n);log(`🛡 Circuitos de Proteção: +${n} de Proteção.`,'heal')}}
-  for(const e of p.grave.filter(x=>x.id==='estatuaViva')){if(p.xp<2)break;const yes=p.isAI?p.hand.length<4:await ask('Estátua Viva de Apólia',[{label:'Pagar 2 XP e recuperar',value:true,primary:true},{label:'Não',value:false}],{text:'Recuperar a Estátua Viva do cemitério para a mão?',preview:e});if(yes){p.xp-=2;removeFrom(p.grave,e);p.hand.push(e);log(`${p.name} paga 2 XP e recupera a Estátua Viva.`)}}
+  for(const e of p.grave.filter(x=>x.id==='estatuaViva')){if(p.xp<2)break;const yes=p.isAI?p.hand.length<4:await asHuman(p,()=>ask('Estátua Viva de Apólia',[{label:'Pagar 2 XP e recuperar',value:true,primary:true},{label:'Não',value:false}],{text:'Recuperar a Estátua Viva do cemitério para a mão?',preview:e}));if(yes){p.xp-=2;removeFrom(p.grave,e);p.hand.push(e);log(`${p.name} paga 2 XP e recupera a Estátua Viva.`)}}
   for(const d of p.dots){damagePlayer(p,d.n,null,d.src);d.t--}p.dots=p.dots.filter(d=>d.t>0);
   for(const h of p.hots){heal(p,h.n,h.src);h.t--}p.hots=p.hots.filter(h=>h.t>0);
   if(checkOver())return false;
@@ -1156,7 +1163,7 @@ function render(){
   const NOMEF={main1:'Fase Inicial',combat:'Combate',main2:'Fase Final'};
   const L=level(H);const meu=G.active===VIEW;
   const quem=G.over?'Fim de jogo':HOT()?esc(P[G.active].name):meu?'Seu turno':'Turno do oponente';
-  const hint=hintText(H,myTurn);
+  const hint=NET.waiting?'⏳ Aguardando a escolha do oponente…':(NET.role==='guest'&&G.busy&&G.active===VIEW)?'⏳ Enviando a jogada…':hintText(H,myTurn);
   const meio=`<div class="pb-mid"><div class="pb-turn">
      <span class="phasebox">
        <button class="phasebtn ${meu?'':'off'}" data-act="phasepop">${quem} · ${NOMEF[G.phase]||''} ▾</button>
@@ -1173,10 +1180,11 @@ function render(){
   $('#mybar').innerHTML=`<div class="pb-left">${pbarHTML(H)}</div>${meio}${botoes}`;
   $('#mid').innerHTML='';
   anim3d();
+  netFlushSoon();
 }
 
 /* ============================== MODAIS ============================== */
-function ask(title,options,o={}){return new Promise(res=>{
+function ask(title,options,o={}){if(REMOTE_CAP){REMOTE_CAP=false;return netPrompt('ask',[title,options,o])}o=o||{};return new Promise(res=>{
   const m=document.createElement('div');m.className='modal-bg';
   m.innerHTML=`<div class="modal"><h3>${esc(title)}</h3>${o.text?`<p>${esc(o.text)}</p>`:''}${o.preview?`<div style="display:flex;justify-content:center;margin-bottom:6px">${cardHTML(o.preview)}</div>`:''}<div class="opts"></div>${o.cancel?`<button class="btn cancel">${esc(o.cancel)}</button>`:''}${o.abort?' <button class="btn danger abort">✕ Cancelar</button>':''}</div>`;
   const box=m.querySelector('.opts');
@@ -1185,7 +1193,7 @@ function ask(title,options,o={}){return new Promise(res=>{
   if(o.cancel)m.querySelector('.cancel').onclick=()=>{m.remove();res(null)};
   if(o.abort)m.querySelector('.abort').onclick=()=>{m.remove();res(CANCEL)};
   document.body.appendChild(m)})}
-function askBlock(att,bl,ins,need){return new Promise(res=>{
+function askBlock(att,bl,ins,need){if(REMOTE_CAP){REMOTE_CAP=false;return netPrompt('askBlock',[att,bl,ins,need])}return new Promise(res=>{
   const sel=new Set();const m=document.createElement('div');m.className='modal-bg';
   const k=kws(att);
   const txt=(k.has('voar')?'Voar: só omnitas com Voar ou Alcance podem bloquear. ':'')+(k.has('imbloqueavel')?'Este ataque não pode ser bloqueado. ':'')+(need>1?'Obstinação: precisa de 2 ou mais bloqueadores. ':'')+(bl.some(offPos)?'🎲 Omnitas fora de posição (atacaram no último turno) rolam 1d6 ao bloquear: 1–3 bloqueiam, 4–6 falham. ':'')+'Selecione um ou mais bloqueadores (o atacante divide o dano entre eles), use uma Execução Instantânea, ou receba o dano.';
@@ -1198,7 +1206,7 @@ function askBlock(att,bl,ins,need){return new Promise(res=>{
   okb.onclick=()=>{m.remove();res({blockers:[...sel]})};m.querySelector('.none').onclick=()=>{m.remove();res({none:1})};upd();document.body.appendChild(m)})}
 const SETTINGS=(()=>{let o={};try{o=JSON.parse(localStorage.getItem('omni_settings')||'{}')||{}}catch(e){}return o})();
 function saveSettings(){try{localStorage.setItem('omni_settings',JSON.stringify(SETTINGS))}catch(e){}}
-function askResponse(R,caster,card,opts){return new Promise(res=>{
+function askResponse(R,caster,card,opts){if(REMOTE_CAP){REMOTE_CAP=false;return netPrompt('askResponse',[R,caster,card,opts])}return new Promise(res=>{
   const m=document.createElement('div');m.className='modal-bg';
   const none=!opts.length;
   m.innerHTML=`<div class="modal" style="text-align:center"><h3>${esc(caster.name)} jogou ${esc(card.d.name)}</h3><div class="resp-card">${bigHTML(card)}</div>
@@ -1210,7 +1218,7 @@ function askResponse(R,caster,card,opts){return new Promise(res=>{
   for(const x of opts){const el=document.createElement('div');el.className='opt-card';el.innerHTML=cardHTML(x)+'<div class="optlbl">Responder</div>';el.onclick=()=>{m.remove();res(x)};box.appendChild(el)}
   m.querySelector('.chk input').onchange=e=>{SETTINGS.skipNoResponse=e.target.checked;saveSettings()};
   m.querySelector('.go').onclick=()=>{m.remove();res(null)};document.body.appendChild(m)})}
-function askMulti(title,cards,min,max,abort){return new Promise(res=>{
+function askMulti(title,cards,min,max,abort){if(REMOTE_CAP){REMOTE_CAP=false;return netPrompt('askMulti',[title,cards,min,max,abort])}return new Promise(res=>{
   const sel=new Set();const m=document.createElement('div');m.className='modal-bg';
   m.innerHTML=`<div class="modal"><h3>${esc(title)}</h3><p>Escolha ${min===max?min:`de ${min} a ${max}`} carta(s).</p><div class="opts"></div><button class="btn primary ok">Confirmar</button>${abort?' <button class="btn danger abort">✕ Cancelar</button>':''}</div>`;
   const box=m.querySelector('.opts'),ok=m.querySelector('.ok');if(abort)m.querySelector('.abort').onclick=()=>{m.remove();res(CANCEL)};
@@ -1229,6 +1237,7 @@ const RULES_HTML=`<ul>
 <li><b>Conhecimento:</b> apenas 1 por turno, não pode ser anulado.</li>
 <li><b>Latência:</b> omnitas recém-baixados só atacam no próximo turno.</li>
 <li><b>Combate:</b> você declara um atacante; o oponente escolhe bloquear ou receber o dano direto. Vários omnitas podem bloquear o mesmo atacante; ele divide o dano entre eles. Cada omnita só pode bloquear um ataque por turno. O dano que sobra não passa para o jogador. Cada omnita ataca uma vez por turno (Golpe Duplo: duas).</li>
+<li>🌐 <b>Online:</b> um jogador cria a sala e envia o código; o outro digita o código e entra. Cada um vê só a própria mão.</li>
 <li>📱 <b>No celular:</b> toque numa carta da mão para levantá-la e toque de novo para jogar. Segure o dedo numa carta para ver a carta grande com todos os detalhes.</li>
 <li><b>Voar:</b> só pode ser bloqueado por Voar ou Alcance.</li>
 <li><b>Suspender N</b> ⏳: ao jogar a carta, escolha baixá-la normal ou suspensa. Suspensa, ela fica revelada ao oponente e entra em jogo depois de N turnos seus, com o efeito extra indicado.</li>
@@ -1245,7 +1254,7 @@ const RULES_HTML=`<ul>
 const opt3dHTML=()=>`<label class="opt3d-l"><input type="checkbox" class="opt3d" ${SETTINGS.no3d?'':'checked'}> 🎲 Dados e moeda em 3D</label>`;
 document.addEventListener('change',e=>{if(e.target.classList&&e.target.classList.contains('opt3d')){SETTINGS.no3d=!e.target.checked;saveSettings();document.querySelectorAll('.opt3d').forEach(x=>x.checked=!SETTINGS.no3d)}});
 function showRules(){const m=document.createElement('div');m.className='modal-bg';m.innerHTML=`<div class="modal"><h3>Como jogar</h3><div class="rules">${RULES_HTML}</div><p>${opt3dHTML()}</p><button class="btn primary">Fechar</button></div>`;m.querySelector('button').onclick=()=>m.remove();document.body.appendChild(m)}
-function gameOver(winner){const m=document.createElement('div');m.className='modal-bg';const hot=HOT();const win=winner&&!winner.isAI;const title=winner===null?'Empate!':hot?`${winner.name} venceu!`:win?'Vitória!':'Derrota';m.innerHTML=`<div class="modal" style="text-align:center"><h3 style="font-size:28px">${title}</h3><p>${hot||win?'Boa aventura, Omnita!':'Os omnitas do oponente prevaleceram.'}</p><button class="btn primary">Jogar novamente</button></div>`;m.querySelector('button').onclick=()=>{m.remove();showStart()};document.body.appendChild(m);render()}
+function gameOver(winner){if(G&&ONLINE()){G.winnerId=winner?winner.id:null;netFlushNow()}const m=document.createElement('div');m.className='modal-bg';const hot=HOT();const win=winner&&(ONLINE()?winner.id===VIEW:!winner.isAI);const title=winner===null?'Empate!':hot?`${winner.name} venceu!`:win?'Vitória!':'Derrota';m.innerHTML=`<div class="modal" style="text-align:center"><h3 style="font-size:28px">${title}</h3><p>${hot||win?'Boa aventura, Omnita!':'Os omnitas do oponente prevaleceram.'}</p><button class="btn primary">Jogar novamente</button></div>`;m.querySelector('button').onclick=()=>{m.remove();netLeave();showStart()};document.body.appendChild(m);render()}
 
 /* =========================== EVENTOS DA UI ========================== */
 let LIFT=null;const MOBILE=()=>matchMedia('(max-width:900px)').matches;
@@ -1278,16 +1287,99 @@ document.addEventListener('click',async e=>{
   if(act==='rules'){showRules();return}
   if(act==='phasepop'){a.closest('.phasebox').classList.toggle('open');return}
   const H=P[VIEW];if(G.over||G.busy||G.active!==VIEW||H.isAI)return;
-  if(act==='combat'){setPhase('combat');return}
-  if(act==='main2'){setPhase('main2');return}
-  if(act==='attackall'){for(let i=0;i<40&&!G.over;i++){const a=P[VIEW].field.filter(canAttack).sort((x,y)=>atk(y)-atk(x))[0];if(!a)break;await attack(a)}render();return}
-  if(act==='end'){await endTurn();return}
-  const c=INST.get(+a.dataset.uid);if(!c)return;
-  if(act==='play'&&MOBILE()&&LIFT!==c.uid){LIFT=c.uid;render();return}
-  if(act==='play'){LIFT=null;const why=whyNot(H,c);if(why){log(`✋ ${c.d.name}: ${why}.`);return}G.busy=true;await playCard(H,c);if(!G.over)G.busy=false;render();return}
-  if(act==='attack'){await attack(c);return}
-  if(act==='ability'){G.busy=true;const a2=abilityOf(c);const yes=await ask(c.d.name,[{label:a2.label,value:true,primary:true},{label:'Cancelar',value:false}],{preview:c});if(yes)await useAbility(H,c);if(!G.over)G.busy=false;render();return}
+  const c=a.dataset.uid?INST.get(+a.dataset.uid):null;
+  if(act==='play'&&c&&MOBILE()&&LIFT!==c.uid){LIFT=c.uid;render();return}
+  if(act==='play'){LIFT=null;if(c){const why=whyNot(H,c);if(why){log(`✋ ${c.d.name}: ${why}.`);return}}}
+  if(NET.role==='guest'){G.busy=true;render();netSend({t:'act',act,uid:c?c.uid:null});return}
+  await doAct(H,act,c);
+
 });
+
+async function doAct(H,act,c){
+  if(G.over||G.busy||G.active!==H.id)return;
+  if(act==='combat'){if(G.phase==='main1')setPhase('combat');return}
+  if(act==='main2'){if(G.phase==='combat')setPhase('main2');return}
+  if(act==='attackall'){for(let i=0;i<40&&!G.over;i++){const a=H.field.filter(canAttack).sort((x,y)=>atk(y)-atk(x))[0];if(!a)break;await attack(a)}render();return}
+  if(act==='end'){await endTurn();return}
+  if(!c)return;
+  if(act==='play'){if(!H.hand.includes(c))return;const why=whyNot(H,c);if(why){log(`✋ ${c.d.name}: ${why}.`);render();return}G.busy=true;await playCard(H,c);if(!G.over)G.busy=false;render();return}
+  if(act==='attack'){if(c.ctrl!==H.id||!canAttack(c))return;await attack(c);return}
+  if(act==='ability'){if(!canUseAbility(H,c))return;G.busy=true;const a2=abilityOf(c);const yes=await asHuman(H,()=>ask(c.d.name,[{label:a2.label,value:true,primary:true},{label:'Cancelar',value:false}],{preview:c}));if(yes)await useAbility(H,c);if(!G.over)G.busy=false;render();return}
+}
+
+/* ============================ ONLINE (Firebase) ============================ */
+const FB_CFG={apiKey:"AIzaSyAYHYrfBfKWqk8oBW8y3nM8p8EFQF-vaTs",authDomain:"omnimorphos.firebaseapp.com",databaseURL:"https://omnimorphos-default-rtdb.firebaseio.com",projectId:"omnimorphos",storageBucket:"omnimorphos.firebasestorage.app",messagingSenderId:"837119345069",appId:"1:837119345069:web:10957a4b9570b5c2d5e124"};
+let REMOTE_CAP=false;
+const NET={role:null,code:null,db:null,uid:null,ref:null,pending:new Map(),seq:0,waiting:0,last:'',tmr:null,q:Promise.resolve(),overShown:false,subs:[]};
+function loadScript(src){return new Promise((ok,no)=>{const sc=document.createElement('script');sc.src=src;sc.onload=ok;sc.onerror=()=>no(new Error('Não foi possível carregar '+src));document.head.appendChild(sc)})}
+async function netInit(){if(NET.db)return;const B='https://cdn.jsdelivr.net/npm/firebase@10.12.2/';
+  if(!window.firebase){await loadScript(B+'firebase-app-compat.js');await loadScript(B+'firebase-auth-compat.js');await loadScript(B+'firebase-database-compat.js')}
+  if(!firebase.apps.length)firebase.initializeApp(FB_CFG);try{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)}catch(e){}const cr=await firebase.auth().signInAnonymously();NET.uid=cr.user.uid;NET.db=firebase.database()}
+const genCode=()=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let x='';for(let i=0;i<5;i++)x+=A[rnd(A.length)];return x};
+function netEnc(v,tbl){
+  if(v===CANCEL)return{__x:1};if(v===undefined)return undefined;if(v===null)return null;
+  const t=typeof v;if(t==='function'||t==='symbol')return undefined;if(t!=='object')return v;
+  if(typeof Element!=='undefined'&&v instanceof Element)return undefined;
+  if(v.isPlayer)return{__p:v.id};
+  if(v.d&&v.uid!==undefined){if(tbl&&tbl[v.uid]===undefined){tbl[v.uid]=0;const o={};for(const k in v){if(k==='d')continue;const x=netEnc(v[k],tbl);if(x!==undefined)o[k]=x}tbl[v.uid]=o}return{__c:v.uid}}
+  if(Array.isArray(v))return v.map(x=>{const y=netEnc(x,tbl);return y===undefined?null:y});
+  const o={};for(const k in v){const x=netEnc(v[k],tbl);if(x!==undefined)o[k]=x}return o}
+function netDec(v,getC){if(v===null||typeof v!=='object')return v;if(v.__c!==undefined)return getC(v.__c);if(v.__p!==undefined)return P[v.__p];if(v.__x)return CANCEL;
+  if(Array.isArray(v))return v.map(x=>netDec(x,getC));const o={};for(const k in v)o[k]=netDec(v[k],getC);return o}
+function serState(){const tbl={};const ps=P.map(p=>{const o={};for(const k in p){const x=netEnc(p[k],tbl);if(x!==undefined)o[k]=x}return o});
+  const g={};for(const k in G){if(k==='snap'||k==='aiFocus')continue;const x=netEnc(G[k],tbl);if(x!==undefined)g[k]=x}
+  return JSON.stringify({P:ps,G:g,C:tbl,L:LOGBUF.slice(-80)})}
+function netSend(m){if(!NET.ref)return;NET.ref.child(NET.role==='host'?'toGuest/m':'toHost/m').push(m).catch(e=>console.warn(e))}
+function netFlushNow(){if(NET.role!=='host'||!G||!ONLINE()||!NET.ref)return;clearTimeout(NET.tmr);NET.tmr=null;const st=serState();if(st===NET.last)return;NET.last=st;NET.ref.child('toGuest/s').set(st).catch(e=>console.warn(e))}
+function netFlushSoon(){if(NET.role!=='host'||!G||!ONLINE())return;if(!NET.tmr)NET.tmr=setTimeout(netFlushNow,150)}
+function netPrompt(kind,args){const id=++NET.seq;NET.waiting++;render();netFlushNow();
+  netSend({t:'ask',id,kind,a:JSON.stringify(netEnc(args)),s:NET.last});
+  return new Promise(res=>NET.pending.set(id,v=>{NET.waiting--;res(v);render()}))}
+// ----- anfitrião -----
+async function netHost(name,deckKey){await netInit();
+  for(let t=0;t<6&&!NET.ref;t++){const code=genCode();const r=NET.db.ref('rooms/'+code);try{await r.update({host:NET.uid,created:Date.now()});NET.code=code;NET.ref=r}catch(e){}}
+  if(!NET.ref)throw new Error('Não foi possível criar a sala.');
+  NET.role='host';await NET.ref.child('status').set('waiting');NET.ref.child('status').onDisconnect().set('closed');
+  const onMsg=snap=>{const m=snap.val();NET.q=NET.q.then(()=>hostMsg(m,name,deckKey)).catch(e=>console.error(e))};
+  NET.ref.child('toHost/m').on('child_added',onMsg);NET.subs.push(()=>NET.ref&&NET.ref.child('toHost/m').off('child_added',onMsg));
+  const onBye=snap=>{if(snap.val()&&G&&ONLINE()&&!G.over)netAlert('O outro jogador saiu da partida.')};
+  NET.ref.child('toHost/bye').on('value',onBye);NET.subs.push(()=>NET.ref&&NET.ref.child('toHost/bye').off('value',onBye));
+  return NET.code}
+async function hostMsg(m,name,deckKey){if(!m)return;
+  if(m.t==='hello'){if(G&&ONLINE())return;DECKS['__online']={desc:'',list:m.list,hidden:true};NET.ref.child('status').set('playing');
+    $('#start').style.display='none';startGame({mode:'online',d1:deckKey,d2:'__online',n1:name||'Anfitrião',n2:m.name||'Convidado',label2:m.deck});return}
+  if(m.t==='ans'){const f=NET.pending.get(m.id);if(f){NET.pending.delete(m.id);f(netDec(JSON.parse(m.r),u=>INST.get(+u)||INST.get(u)))}return}
+  if(m.t==='act'){if(G&&ONLINE()&&!G.over&&!G.busy&&G.active===1){const c=m.uid!=null?INST.get(+m.uid):null;await doAct(P[1],m.act,c)}NET.last='';netFlushNow()}}
+// ----- convidado -----
+async function netJoin(code,name,deckKey){await netInit();code=code.trim().toUpperCase();
+  const r=NET.db.ref('rooms/'+code);const snap=await r.once('value');const v=snap.val();
+  if(!v)throw new Error('Sala não encontrada. Confira o código.');if(v.guest&&v.guest!==NET.uid)throw new Error('Essa sala já tem dois jogadores.');if(v.status==='closed')throw new Error('Essa sala foi fechada.');
+  if(!v.guest)await r.child('guest').set(NET.uid);NET.ref=r;NET.code=code;NET.role='guest';
+  r.child('toHost/bye').onDisconnect().set(true);
+  const onState=s=>{const st=s.val();if(st)NET.q=NET.q.then(()=>guestApply(st))};
+  const onMsg=s=>{const m=s.val();if(m&&m.t==='ask')NET.q=NET.q.then(()=>guestPrompt(m)).catch(e=>console.error(e))};
+  const onStatus=s=>{const v=s.val();if((v==='closed'||v===null)&&NET.role==='guest'&&!(G&&G.over))netAlert('O anfitrião saiu da partida.')};
+  r.child('toGuest/s').on('value',onState);r.child('toGuest/m').on('child_added',onMsg);r.child('status').on('value',onStatus);
+  NET.subs.push(()=>{r.child('toGuest/s').off('value',onState);r.child('toGuest/m').off('child_added',onMsg);r.child('status').off('value',onStatus)});
+  netSend({t:'hello',name,deck:deckKey,list:DECKS[deckKey].list})}
+function guestApply(str){if(!str||str===NET.last)return;NET.last=str;const s=JSON.parse(str);
+  INST.clear();const cards={};for(const u in s.C){const o=s.C[u];const c=Object.assign({},o,{d:DEF[o.id]});cards[u]=c;INST.set(c.uid,c)}
+  P=s.P.map(o=>Object.assign({},o));const gc=u=>cards[u];
+  for(const c of Object.values(cards))for(const k in c)if(k!=='d')c[k]=netDec(c[k],gc);
+  for(const p of P)for(const k in p)p[k]=netDec(p[k],gc);
+  G=netDec(s.G,gc);VIEW=1;$('#start').style.display='none';
+  const L=$('#log');L.innerHTML='';for(const[msg,cls]of s.L){const el=document.createElement('div');if(cls)el.className=cls;el.textContent=msg;L.appendChild(el)}L.scrollTop=L.scrollHeight;
+  render();
+  if(G.over&&G.winnerId!==undefined&&!NET.overShown){NET.overShown=true;gameOver(G.winnerId===null?null:P[G.winnerId])}}
+async function guestPrompt(m){guestApply(m.s);const a=netDec(JSON.parse(m.a),u=>INST.get(+u)||INST.get(u));let r=null;
+  try{if(m.kind==='ask')r=await ask(a[0],a[1]||[],a[2]||{});else if(m.kind==='askMulti')r=await askMulti(a[0],a[1]||[],a[2],a[3],a[4]);
+    else if(m.kind==='askBlock')r=await askBlock(a[0],a[1]||[],a[2]||[],a[3]);else if(m.kind==='askResponse')r=await askResponse(a[0],a[1],a[2],a[3]||[])}
+  catch(e){console.error(e)}
+  const enc=netEnc(r);netSend({t:'ans',id:m.id,r:JSON.stringify(enc===undefined?null:enc)})}
+function netAlert(msg){const m=document.createElement('div');m.className='modal-bg';m.innerHTML=`<div class="modal" style="text-align:center"><h3>Partida online</h3><p>${esc(msg)}</p><button class="btn primary">Voltar ao início</button></div>`;
+  m.querySelector('button').onclick=()=>{m.remove();netLeave();G=null;showStart()};document.body.appendChild(m)}
+function netLeave(){try{NET.subs.forEach(f=>f());if(NET.ref){if(NET.role==='host')NET.ref.remove().catch(()=>{});else NET.ref.child('toHost/bye').set(true).catch(()=>{})}}catch(e){}
+  Object.assign(NET,{role:null,code:null,ref:null,pending:new Map(),waiting:0,last:'',q:Promise.resolve(),overShown:false,subs:[]});delete DECKS['__online']}
 
 /* ============================ INÍCIO ============================ */
 const STORE_KEY='omni_decks_v1';
@@ -1299,11 +1391,12 @@ const deckSize=k=>DECKS[k].list.reduce((s,[,n])=>s+n,0);
 const UI={mode:'ai',d1:'Atharvash',d2:'random',diff:'normal'};
 function showStart(){
   loadCustom();const st=$('#start');st.style.display='grid';
-  const deckBtns=(sel,name,withRandom)=>Object.keys(DECKS).map(k=>{const c=DECKS[k].custom?'x':k;const n=deckSize(k);return`<div class="deck c-${c} ${sel===k?'sel':''}" data-${name}="${esc(k)}" ${DECKS[k].custom?'style="--cc:#9b6cd3"':''}><h3>${esc(k)}</h3><p>${esc(DECKS[k].desc)}</p><p class="muted">${n} cartas${n<60?' · <b style="color:#ff9b88">incompleto</b>':''}</p></div>`}).join('')+(withRandom?`<div class="deck c-x ${sel==='random'?'sel':''}" data-${name}="random" style="--cc:#7f7569"><h3>Aleatório</h3><p>Um dos baralhos iniciais.</p></div>`:'');
+  const deckBtns=(sel,name,withRandom)=>Object.keys(DECKS).filter(k=>!DECKS[k].hidden).map(k=>{const c=DECKS[k].custom?'x':k;const n=deckSize(k);return`<div class="deck c-${c} ${sel===k?'sel':''}" data-${name}="${esc(k)}" ${DECKS[k].custom?'style="--cc:#9b6cd3"':''}><h3>${esc(k)}</h3><p>${esc(DECKS[k].desc)}</p><p class="muted">${n} cartas${n<60?' · <b style="color:#ff9b88">incompleto</b>':''}</p></div>`}).join('')+(withRandom?`<div class="deck c-x ${sel==='random'?'sel':''}" data-${name}="random" style="--cc:#7f7569"><h3>Aleatório</h3><p>Um dos baralhos iniciais.</p></div>`:'');
   const seg=(key,opts)=>`<div class="seg">${opts.map(([v,l])=>`<button class="btn ${UI[key]===v||RULES[key]===v?'primary':''}" data-set="${key}" data-val="${v}">${l}</button>`).join('')}</div>`;
   const draw_=()=>{const hot=UI.mode==='hot';if(hot&&UI.d2==='random')UI.d2='Gaia';
+    if(UI.mode==='online'){drawOnline();return}
     st.innerHTML=`<div class="box"><h1>OMNIMORPHOS</h1><div class="sub">1ª edição · versão digital</div>
-    <div class="lbl">Modo de jogo</div>${seg('mode',[['ai','Contra o computador'],['hot','2 jogadores (mesmo computador)']])}
+    <div class="lbl">Modo de jogo</div>${seg('mode',[['ai','Contra o computador'],['hot','2 jogadores (mesmo computador)'],['online','🌐 Online (código de sala)']])}
     ${hot?'':`<div class="lbl">Dificuldade</div>${seg('diff',[['facil','Fácil'],['normal','Normal'],['dificil','Difícil']])}`}
     <div class="lbl">${hot?'Baralho do Jogador 1':'Seu baralho'}</div><div class="decks">${deckBtns(UI.d1,'d1',false)}</div>
     <div class="lbl">${hot?'Baralho do Jogador 2':'Baralho do oponente (computador)'}</div><div class="decks">${deckBtns(UI.d2,'d2',!hot)}</div>
@@ -1317,6 +1410,27 @@ function showStart(){
     $('#go').onclick=()=>{const starters=Object.keys(DECKS).filter(k=>!DECKS[k].custom);const d2=UI.d2==='random'?starters[rnd(starters.length)]:UI.d2;
       const bad=[UI.d1,d2].find(k=>deckSize(k)<60);if(bad){$('#warn').textContent=`O baralho "${bad}" tem menos de 60 cartas. Complete-o no editor.`;return}
       st.style.display='none';startGame({mode:UI.mode,d1:UI.d1,d2,diff:UI.diff})}};
+  const drawOnline=()=>{const nm=(()=>{try{return localStorage.getItem('omni_name')||''}catch(e){return''}})();
+    st.innerHTML=`<div class="box"><h1>OMNIMORPHOS</h1><div class="sub">1ª edição · versão digital</div>
+    <div class="lbl">Modo de jogo</div>${seg('mode',[['ai','Contra o computador'],['hot','2 jogadores (mesmo computador)'],['online','🌐 Online (código de sala)']])}
+    <div class="lbl">Seu nome</div><input id="onm" class="inp" maxlength="18" placeholder="Seu nome" value="${esc(nm)}">
+    <div class="lbl">Seu baralho</div><div class="decks">${deckBtns(UI.d1,'d1',false)}</div>
+    <div class="online-box"><div><button class="btn primary" id="mk" style="font-size:16px;padding:9px 22px">Criar sala</button><p class="muted">Gera um código para enviar ao seu amigo.</p></div>
+      <div><div style="display:flex;gap:6px;justify-content:center"><input id="ocode" class="inp" maxlength="6" placeholder="CÓDIGO" style="width:120px;text-transform:uppercase;text-align:center;letter-spacing:3px"><button class="btn" id="jn">Entrar</button></div><p class="muted">Digite o código que seu amigo enviou.</p></div></div>
+    <p id="ost" class="ost"></p>
+    <p>${opt3dHTML()}</p></div>`;
+    const name=()=>{const v=($('#onm').value||'').trim().slice(0,18);try{localStorage.setItem('omni_name',v)}catch(e){}return v};
+    st.querySelectorAll('[data-d1]').forEach(el=>el.onclick=()=>{UI.d1=el.dataset.d1;drawOnline()});
+    st.querySelectorAll('[data-set]').forEach(el=>el.onclick=()=>{const k=el.dataset.set,v=el.dataset.val;UI[k]=v;draw_()});
+    const ost=t=>{$('#ost').innerHTML=t};
+    $('#mk').onclick=async()=>{if(deckSize(UI.d1)<60){ost('Complete o baralho no editor (mínimo 60 cartas).');return}const n=name()||'Anfitrião';ost('Criando sala…');$('#mk').disabled=true;$('#jn').disabled=true;
+      try{const code=await netHost(n,UI.d1);ost(`Código da sala: <b class="code">${code}</b> <button class="btn" id="cp">Copiar</button><br>Envie para o seu amigo. Aguardando ele entrar… <button class="btn" id="cx">Cancelar</button>`);
+        $('#cp').onclick=()=>{try{navigator.clipboard.writeText(code)}catch(e){}};$('#cx').onclick=()=>{netLeave();drawOnline()}}
+      catch(e){ost('⚠ '+esc(e.message||String(e)));$('#mk').disabled=false;$('#jn').disabled=false}};
+    $('#jn').onclick=async()=>{const code=($('#ocode').value||'').trim();if(code.length<4){ost('Digite o código da sala.');return}if(deckSize(UI.d1)<60){ost('Complete o baralho no editor (mínimo 60 cartas).');return}
+      const n=name()||'Convidado';ost('Entrando…');$('#mk').disabled=true;$('#jn').disabled=true;
+      try{await netJoin(code,n,UI.d1);ost('Conectado! Aguardando o anfitrião começar a partida…')}
+      catch(e){netLeave();ost('⚠ '+esc(e.message||String(e)));$('#mk').disabled=false;$('#jn').disabled=false}}};
   draw_()}
 
 /* --------------------------- EDITOR DE BARALHOS --------------------------- */
@@ -1383,13 +1497,14 @@ function showEditor(){
 async function startGame(cfg,legacyB){
   if(typeof cfg==='string')cfg={mode:AUTO?'auto':'ai',d1:cfg,d2:legacyB,diff:'normal'};
   INST.clear();UID=1;$('#log').innerHTML='';VIEW=0;FOCUS_DEPTH=0;
-  const hot=cfg.mode==='hot';
-  P=[newPlayer(0,hot?'Jogador 1':AUTO?'IA Sul':'Você',AUTO,cfg.d1),newPlayer(1,hot?'Jogador 2':'Oponente',!hot,cfg.d2)];
+  const hot=cfg.mode==='hot',onl=cfg.mode==='online';LOGBUF=[];
+  P=[newPlayer(0,onl?cfg.n1:hot?'Jogador 1':AUTO?'IA Sul':'Você',AUTO,cfg.d1),newPlayer(1,onl?cfg.n2:hot?'Jogador 2':'Oponente',!hot&&!onl,cfg.d2)];
+  if(onl){P[1].remote=true;if(cfg.label2)P[1].deckName=cfg.label2}
   G={turnNo:0,active:0,phase:'main1',busy:true,over:false,mode:cfg.mode,diff:cfg.diff||'normal'};
   for(const p of P)draw(p,RULES.openingHand);
   render();
   for(const p of P){if(p.isAI)continue;await focus(p);render();let n=RULES.openingHand;
-    while(n>1){const r=await ask(hot?`Mão inicial de ${p.name}`:'Sua mão inicial',[...p.hand.map(c=>({card:c,value:null,disabled:true,show:true})),{label:'Manter mão',value:'keep',primary:true},{label:`Trocar (comprar ${n-1})`,value:'mull'}],{text:'Se não gostar, devolva tudo, embaralhe e compre uma carta a menos.'});if(r==='keep')break;n--;p.deck.push(...p.hand.splice(0));shuffle(p.deck);draw(p,n);render()}}
+    while(n>1){const r=await asHuman(p,()=>ask(hot||cfg.mode==='online'?`Mão inicial de ${p.name}`:'Sua mão inicial',[...p.hand.map(c=>({card:c,value:null,disabled:true,show:true})),{label:'Manter mão',value:'keep',primary:true},{label:`Trocar (comprar ${n-1})`,value:'mull'}],{text:'Se não gostar, devolva tudo, embaralhe e compre uma carta a menos.'}));if(r==='keep')break;n--;p.deck.push(...p.hand.splice(0));shuffle(p.deck);draw(p,n);render()}}
   for(const p of P)draw(p,RULES.extraAfterMulligan);
   const first=rnd(2);log(`Moeda: ${P[first].name} começa.`,'t');
   await startTurn(P[first]);
