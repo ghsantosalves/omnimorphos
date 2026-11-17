@@ -243,6 +243,9 @@ button{font:inherit}
 .float.heal{color:#7ee09a}.float.xp{color:#c9a4f5}
 @keyframes up{to{transform:translateY(-40px);opacity:0}}
 @media (max-width:900px){html,body{overflow-x:hidden}#game{grid-template-columns:minmax(0,1fr);height:auto;overflow:visible}#board{padding:6px;overflow:visible}.pbar{gap:7px;padding:5px 8px}.acts{margin-left:0;justify-content:flex-start}.hint2{text-align:left}.row{padding:6px}#side{border-left:0;border-top:1px solid var(--line)}#preview{display:none}#log{max-height:220px}.card{width:100px;height:147px}.card .art{font-size:30px}.row{gap:10px;min-height:156px}}
+
+.start-menu{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 0 20px}.start-menu a{flex:1 1 100px;max-width:170px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;color:var(--text);background:#ffffff08;text-decoration:none;font-weight:700}.start-menu a:hover,.start-menu a:focus-visible{background:#ffffff18;outline:2px solid var(--gold);outline-offset:2px}.start-menu a.active{background:var(--gold);color:#1b140c;border-color:var(--gold)}
+@media(max-width:480px){.start-menu{gap:6px}.start-menu a{flex:1 1 40%;padding:10px 6px}}
 </style>
 </head>
 <body>
@@ -1395,7 +1398,7 @@ function showStart(){
   const seg=(key,opts)=>`<div class="seg">${opts.map(([v,l])=>`<button class="btn ${UI[key]===v||RULES[key]===v?'primary':''}" data-set="${key}" data-val="${v}">${l}</button>`).join('')}</div>`;
   const draw_=()=>{const hot=UI.mode==='hot';if(hot&&UI.d2==='random')UI.d2='Gaia';
     if(UI.mode==='online'){drawOnline();return}
-    st.innerHTML=`<div class="box"><h1>OMNIMORPHOS</h1><div class="sub">1ª edição · versão digital</div>
+    st.innerHTML=`<div class="box"><h1>OMNIMORPHOS</h1><div class="sub">1ª edição · versão digital</div><nav class="start-menu" aria-label="Menu principal"><a href="#" class="active" aria-current="page" onclick="return false">▶ Jogar</a><a href="regras.html" target="_blank" rel="noopener">📖 Regras</a><a href="lore.html" target="_blank" rel="noopener">📜 Lore</a><a href="regras.html#cartas" target="_blank" rel="noopener">🃏 Cartas</a></nav>
     <div class="lbl">Modo de jogo</div>${seg('mode',[['ai','Contra o computador'],['hot','2 jogadores (mesmo computador)'],['online','🌐 Online (código de sala)']])}
     ${hot?'':`<div class="lbl">Dificuldade</div>${seg('diff',[['facil','Fácil'],['normal','Normal'],['dificil','Difícil']])}`}
     <div class="lbl">${hot?'Baralho do Jogador 1':'Seu baralho'}</div><div class="decks">${deckBtns(UI.d1,'d1',false)}</div>
@@ -1411,7 +1414,7 @@ function showStart(){
       const bad=[UI.d1,d2].find(k=>deckSize(k)<60);if(bad){$('#warn').textContent=`O baralho "${bad}" tem menos de 60 cartas. Complete-o no editor.`;return}
       st.style.display='none';startGame({mode:UI.mode,d1:UI.d1,d2,diff:UI.diff})}};
   const drawOnline=()=>{const nm=(()=>{try{return localStorage.getItem('omni_name')||''}catch(e){return''}})();
-    st.innerHTML=`<div class="box"><h1>OMNIMORPHOS</h1><div class="sub">1ª edição · versão digital</div>
+    st.innerHTML=`<div class="box"><h1>OMNIMORPHOS</h1><div class="sub">1ª edição · versão digital</div><nav class="start-menu" aria-label="Menu principal"><a href="#" class="active" aria-current="page" onclick="return false">▶ Jogar</a><a href="regras.html" target="_blank" rel="noopener">📖 Regras</a><a href="lore.html" target="_blank" rel="noopener">📜 Lore</a><a href="regras.html#cartas" target="_blank" rel="noopener">🃏 Cartas</a></nav>
     <div class="lbl">Modo de jogo</div>${seg('mode',[['ai','Contra o computador'],['hot','2 jogadores (mesmo computador)'],['online','🌐 Online (código de sala)']])}
     <div class="lbl">Seu nome</div><input id="onm" class="inp" maxlength="18" placeholder="Seu nome" value="${esc(nm)}">
     <div class="lbl">Seu baralho</div><div class="decks">${deckBtns(UI.d1,'d1',false)}</div>
